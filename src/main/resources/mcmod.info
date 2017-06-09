@@ -1,0 +1,16 @@
+[
+{
+  "modid": "pcrossbow",
+  "name": "Project Crossbow",
+  "description": "LASERS",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["phantamanta44"],
+  "credits": "Vazkii: some random bits of code; aidancbrady: some ideas about how to program lasers; Team CoFH: the RF API",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": [""]
+}
+]

@@ -1,0 +1,8 @@
+itemGroup.tab_pcrossbow=Project Crossbow
+
+tile.pcrossbow:laser0.name=Solid-State Laser Casing
+tile.pcrossbow:laser1.name=Gas Laser Casing
+tile.pcrossbow:laser2.name=Laser Diode Casing
+tile.pcrossbow:laser3.name=Atomic Laser Casing
+
+pcrossbow.info.energy=Energy Stored

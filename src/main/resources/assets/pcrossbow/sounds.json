@@ -1,0 +1,50 @@
+{
+  "tile.laser.lasing0": {
+    "category": "block",
+    "sounds": [
+      "laser/laser0"
+    ]
+  },
+  "tile.laser.lasing1": {
+    "category": "block",
+    "sounds": [
+      "laser/laser1"
+    ]
+  },
+  "tile.laser.lasing2": {
+    "category": "block",
+    "sounds": [
+      "laser/laser2"
+    ]
+  },
+  "tile.laser.lasing3": {
+    "category": "block",
+    "sounds": [
+      "laser/laser3"
+    ]
+  },
+  "tile.laser.startup0": {
+    "category": "block",
+    "sounds": [
+      "laser/startup0"
+    ]
+  },
+  "tile.laser.startup1": {
+    "category": "block",
+    "sounds": [
+      "laser/startup1"
+    ]
+  },
+  "tile.laser.startup2": {
+    "category": "block",
+    "sounds": [
+      "laser/startup2"
+    ]
+  },
+  "tile.laser.startup3": {
+    "category": "block",
+    "sounds": [
+      "laser/startup3"
+    ]
+  }
+}
