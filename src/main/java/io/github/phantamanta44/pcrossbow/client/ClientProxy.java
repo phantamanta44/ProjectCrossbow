@@ -1,9 +1,11 @@
 package io.github.phantamanta44.pcrossbow.client;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import io.github.phantamanta44.pcrossbow.CommonProxy;
 import io.github.phantamanta44.pcrossbow.client.fx.EntityLaser;
 import io.github.phantamanta44.pcrossbow.client.handler.ClientTickHandler;
+import io.github.phantamanta44.pcrossbow.client.render.RenderLaserBlock;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MovingObjectPosition;
@@ -13,11 +15,14 @@ import net.minecraftforge.fluids.IFluidBlock;
 
 public class ClientProxy extends CommonProxy {
 
+    public static int renderLaserBlock;
+
     @Override
     public void onInit() {
         super.onInit();
         FMLCommonHandler.instance().bus().register(new ClientTickHandler());
-        // TODO Register renders
+        renderLaserBlock = RenderingRegistry.getNextAvailableRenderId();
+        RenderingRegistry.registerBlockHandler(new RenderLaserBlock());
     }
 
     @Override

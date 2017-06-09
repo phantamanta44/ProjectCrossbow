@@ -4,6 +4,7 @@ import cofh.api.block.IDismantleable;
 import cpw.mods.fml.common.registry.GameRegistry;
 import io.github.phantamanta44.pcrossbow.block.base.BlockModSubs;
 import io.github.phantamanta44.pcrossbow.block.base.ItemBlockState;
+import io.github.phantamanta44.pcrossbow.client.ClientProxy;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
 import io.github.phantamanta44.pcrossbow.constant.XbowConst;
 import io.github.phantamanta44.pcrossbow.item.block.ItemBlockLaser;
@@ -19,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.ArrayList;
 
@@ -40,20 +42,33 @@ public class BlockLaser extends BlockModSubs implements ITileEntityProvider, IDi
 
     @Override
     public void registerBlockIcons(IIconRegister registry) { // TODO Implement for other laser types
-        icons = new IIcon[] {
-                registry.registerIcon(XbowConst.MOD_PREF + LangConst.BLOCK_LASER_NAME + "0_front"),
-                registry.registerIcon(XbowConst.MOD_PREF + LangConst.BLOCK_LASER_NAME + "0_side")
-        };
+        icons = new IIcon[subblockCount * 3];
+        for (int i = 0; i < subblockCount; i++) {
+            icons[i * 3] = registry.registerIcon(XbowConst.MOD_PREF + LangConst.BLOCK_LASER_NAME + i + "_front");
+            icons[i * 3 + 1] = registry.registerIcon(XbowConst.MOD_PREF + LangConst.BLOCK_LASER_NAME + i + "_side");
+            icons[i * 3 + 2] = registry.registerIcon(XbowConst.MOD_PREF + LangConst.BLOCK_LASER_NAME + i + "_back");
+        }
     }
 
     @Override
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int face) { // TODO Implement for other laser types
-        return icons[((TileLaser)world.getTileEntity(x, y, z)).getFacing() == face ? 0 : 1];
+        int direction = ((TileLaser)world.getTileEntity(x, y, z)).getFacing();
+        if (direction == face)
+            return icons[world.getBlockMetadata(x, y, z) * 3];
+        ForgeDirection dir = ForgeDirection.getOrientation(direction);
+        if (dir.getOpposite().ordinal() == face)
+            return icons[world.getBlockMetadata(x, y, z) * 3 + 2];
+        return icons[world.getBlockMetadata(x, y, z) * 3 + 1];
     }
 
     @Override
-    public IIcon getIcon(int face, int meta) { // TODO Implement for other laser types
-        return icons[face == 3 ? 0 : 1];
+    public int getRenderType() {
+        return ClientProxy.renderLaserBlock;
+    }
+
+    @Override
+    public IIcon getIcon(int face, int meta) {
+        return icons[meta * 3 + (face == 3 ? 0 : face == 5 ? 2 : 1)];
     }
 
     @Override
