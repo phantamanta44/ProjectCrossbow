@@ -7,7 +7,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 public class RenderLaserBlock implements ISimpleBlockRenderingHandler {
@@ -15,6 +14,9 @@ public class RenderLaserBlock implements ISimpleBlockRenderingHandler {
     // Adapted from net.minecraft.client.renderer.RenderBlocks#renderBlockAsItem(Block, int, float)
     @Override
     public void renderInventoryBlock(Block block, int meta, int modelId, RenderBlocks renderer) {
+        renderer.uvRotateSouth = 3;
+        renderer.uvRotateTop = 1;
+        renderer.uvRotateBottom = 2;
         Tessellator tessellator = Tessellator.instance;
         block.setBlockBoundsForItemRender();
         renderer.setRenderBoundsFromBlock(block);
@@ -45,6 +47,7 @@ public class RenderLaserBlock implements ISimpleBlockRenderingHandler {
         renderer.renderFaceXPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIconFromSideAndMetadata(block, 5, meta));
         tessellator.draw();
         GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+        renderer.uvRotateTop = renderer.uvRotateBottom = renderer.uvRotateSouth = 0;
     }
 
     @Override

@@ -11,17 +11,18 @@ import org.lwjgl.opengl.GL11;
 public class EntityLaser extends EntityFX {
 
     private final Vec3 dir;
-    private final double length;
-    private final double radius;
+    private final double length, rInit, rFinal;
 
-    public EntityLaser(World world, Vec3 start, Vec3 end, double intensity, int colour) {
+    public EntityLaser(World world, Vec3 start, Vec3 end, float initialRadius, double intensity, double decay, int colour) {
         super(world, start.xCoord, start.yCoord, start.zCoord);
         dir = end.subtract(start);
         length = dir.lengthVector();
-        this.radius = 0.0075D * intensity;
+        this.rInit = 0.03125 * initialRadius;
+        this.rFinal = rInit + decay * length;
         this.particleRed = ((colour & 0xFF0000) >> 16) / 255F;
         this.particleGreen = ((colour & 0x0000FF) >> 8) / 255F;
         this.particleBlue = (colour & 0x0000FF) / 255F;
+        this.particleAlpha = Math.min(Math.max(Double.valueOf(intensity).floatValue() / 300F, 0.102F), 0.2F);
         this.particleGravity = 0;
         this.motionX = this.motionY = this.motionZ = 0;
         this.prevPosX = this.posX;
@@ -61,32 +62,32 @@ public class EntityLaser extends EntityFX {
         GL11.glRotated(Math.atan2(dir.yCoord, Math.abs(dir.zCoord)) * 180 / Math.PI, 1, 0, 0);
 
         tess.startDrawingQuads();
-        tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, 0.16F);
+        tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
 
-        tess.addVertex(radius, radius, length);
-        tess.addVertex(radius, -radius, length);
-        tess.addVertex(radius, -radius, 0);
-        tess.addVertex(radius, radius, 0);
+        tess.addVertex(rFinal, rFinal, length);
+        tess.addVertex(rFinal, -rFinal, length);
+        tess.addVertex(rInit, -rInit, 0);
+        tess.addVertex(rInit, rInit, 0);
 
-        tess.addVertex(-radius, radius, 0);
-        tess.addVertex(-radius, -radius, 0);
-        tess.addVertex(-radius, -radius, length);
-        tess.addVertex(-radius, radius, length);
+        tess.addVertex(-rInit, rInit, 0);
+        tess.addVertex(-rInit, -rInit, 0);
+        tess.addVertex(-rFinal, -rFinal, length);
+        tess.addVertex(-rFinal, rFinal, length);
 
-        tess.addVertex(radius, radius, 0);
-        tess.addVertex(-radius, radius, 0);
-        tess.addVertex(-radius, radius, length);
-        tess.addVertex(radius, radius, length);
+        tess.addVertex(rInit, rInit, 0);
+        tess.addVertex(-rInit, rInit, 0);
+        tess.addVertex(-rFinal, rFinal, length);
+        tess.addVertex(rFinal, rFinal, length);
 
-        tess.addVertex(radius, -radius, length);
-        tess.addVertex(-radius, -radius, length);
-        tess.addVertex(-radius, -radius, 0);
-        tess.addVertex(radius, -radius, 0);
+        tess.addVertex(rFinal, -rFinal, length);
+        tess.addVertex(-rFinal, -rFinal, length);
+        tess.addVertex(-rInit, -rInit, 0);
+        tess.addVertex(rInit, -rInit, 0);
 
-        tess.addVertex(radius, radius, length);
-        tess.addVertex(-radius, radius, length);
-        tess.addVertex(-radius, -radius, length);
-        tess.addVertex(radius, -radius, length);
+        tess.addVertex(rFinal, rFinal, length);
+        tess.addVertex(-rFinal, rFinal, length);
+        tess.addVertex(-rFinal, -rFinal, length);
+        tess.addVertex(rFinal, -rFinal, length);
 
         tess.draw();
 

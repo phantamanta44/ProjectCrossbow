@@ -42,15 +42,15 @@ public class CommonProxy {
     public void doLasing(World world, float x, float y, float z, Vec3 dir, float initialIntensity, float initialRadius, float radiusRate) {
         dir = dir.normalize();
         Vec3 initialPos = Vec3.createVectorHelper(x + dir.xCoord * 0.5D, y + dir.yCoord * 0.5D, z + dir.zCoord * 0.5D);
-        double range = Math.sqrt(initialIntensity / (Math.PI * INTENSITY_CUTOFF)) / radiusRate;
+        double range = Math.min(Math.sqrt(initialIntensity / (Math.PI * INTENSITY_CUTOFF)) / radiusRate, 128);
         Vec3 maxPotentialPos = initialPos.addVector(range * dir.xCoord, range * dir.yCoord, range * dir.zCoord);
         Vec3 traceStart = initialPos.addVector(dir.xCoord < 0 ? -1 : 0, dir.yCoord < 0 ? -1 : 0, dir.zCoord < 0 ? -1 : 0);
         MovingObjectPosition trace = traceRay(
                 world, traceStart, maxPotentialPos, b -> b.isOpaqueCube() || b instanceof IFluidBlock || b instanceof BlockLiquid, true);
-        double factor = initialIntensity / (Math.PI * radiusRate * radiusRate);
         if (trace != null) {
             int tX = trace.blockX, tY = trace.blockY, tZ = trace.blockZ;
-            double intensity = factor / (Math.pow(tX - x, 2) + Math.pow(tY - y, 2) + Math.pow(tZ - z, 2));
+            double intensity = initialIntensity /
+                    (initialRadius + Math.PI * radiusRate * radiusRate * (Math.pow(tX - x, 2) + Math.pow(tY - y, 2) + Math.pow(tZ - z, 2)));
             Block block = world.getBlock(tX, tY, tZ);
             if (block instanceof IFluidBlock || block instanceof BlockLiquid) {
                 Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
@@ -76,10 +76,13 @@ public class CommonProxy {
         ))).stream()
                 .filter(e -> e.boundingBox != null && intersectsLine(e.boundingBox, initialPos, finalPos))
                 .forEach(e -> {
-                    double intensity = factor / e.getDistanceSq(initialPos.xCoord, initialPos.yCoord, initialPos.zCoord);
-                    e.setFire((int)Math.floor(intensity * 10));
-                    if (e.hurtResistantTime <= 0)
-                        e.attackEntityFrom(DamageSource.inFire, Double.valueOf(intensity).floatValue());
+                    double intensity = initialIntensity /
+                            (initialRadius + Math.PI * radiusRate * radiusRate * e.getDistanceSq(initialPos.xCoord, initialPos.yCoord, initialPos.zCoord));
+                    if (intensity >= 1) {
+                        e.setFire((int)Math.floor(intensity * 10));
+                        if (e.hurtResistantTime <= 0)
+                            e.attackEntityFrom(DamageSource.inFire, Double.valueOf(intensity).floatValue());
+                    }
                 });
     }
 

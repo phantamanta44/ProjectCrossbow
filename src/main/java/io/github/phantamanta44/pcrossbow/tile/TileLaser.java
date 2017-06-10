@@ -37,7 +37,7 @@ public abstract class TileLaser extends TileBasicInventory implements IReconfigu
                 ForgeDirection facing = ForgeDirection.getOrientation(rotation);
                 ProjectCrossbow.PROXY.doLasing(
                         worldObj, xCoord + 0.5F, yCoord + 0.5F, zCoord + 0.5F,
-                        Vec3.createVectorHelper(facing.offsetX, facing.offsetY, facing.offsetZ), 8F, 1F, 0.1F);
+                        Vec3.createVectorHelper(facing.offsetX, facing.offsetY, facing.offsetZ), 50F, 4F, 0.0025F);
                 if (worldObj.isRemote) {
                     long currentTick = worldObj.getTotalWorldTime();
                     if (currentTick - lastLasingTime > 30) {
