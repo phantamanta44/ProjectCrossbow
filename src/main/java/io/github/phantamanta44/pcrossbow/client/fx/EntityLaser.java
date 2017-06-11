@@ -13,7 +13,7 @@ public class EntityLaser extends EntityFX {
     private final Vec3 dir;
     private final double length, rInit, rFinal;
 
-    public EntityLaser(World world, Vec3 start, Vec3 end, float initialRadius, double intensity, double decay, int colour) {
+    public EntityLaser(World world, Vec3 start, Vec3 end, float initialRadius, double power, double decay, int colour) {
         super(world, start.xCoord, start.yCoord, start.zCoord);
         dir = end.subtract(start);
         length = dir.lengthVector();
@@ -22,7 +22,7 @@ public class EntityLaser extends EntityFX {
         this.particleRed = ((colour & 0xFF0000) >> 16) / 255F;
         this.particleGreen = ((colour & 0x0000FF) >> 8) / 255F;
         this.particleBlue = (colour & 0x0000FF) / 255F;
-        this.particleAlpha = Math.min(Math.max(Double.valueOf(intensity).floatValue() / 300F, 0.102F), 0.2F);
+        this.particleAlpha = Math.min(Math.max(Double.valueOf(power).floatValue() / 300F, 0.102F), 0.2F);
         this.particleGravity = 0;
         this.motionX = this.motionY = this.motionZ = 0;
         this.prevPosX = this.posX;
@@ -43,6 +43,11 @@ public class EntityLaser extends EntityFX {
         prevPosZ = posZ;
         if (particleAge++ >= particleMaxAge)
             setDead();
+    }
+
+    @Override
+    public boolean shouldRenderInPass(int pass) {
+        return pass == 1;
     }
 
     @Override

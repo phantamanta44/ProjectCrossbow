@@ -17,4 +17,9 @@ public class ResConst {
             new ResourceLocation(XbowConst.MOD_ID, "tile.laser.startup3")
     };
 
+    public static final String MODEL_KEY = XbowConst.MOD_PREF + "textures/model/";
+
+    public static final String MODEL_BLOCK_KEY = MODEL_KEY + "block/";
+    public static final ResourceLocation MODEL_INDUCTOR = new ResourceLocation(MODEL_BLOCK_KEY + "inductor.png");
+
 }

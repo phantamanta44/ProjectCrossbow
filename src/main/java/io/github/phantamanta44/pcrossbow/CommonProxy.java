@@ -1,7 +1,10 @@
 package io.github.phantamanta44.pcrossbow;
 
+import io.github.phantamanta44.pcrossbow.api.ILaserConsumer;
+import io.github.phantamanta44.pcrossbow.api.LaserConsuming;
 import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
 import io.github.phantamanta44.pcrossbow.item.XbowItems;
+import io.github.phantamanta44.pcrossbow.tile.TileInductor;
 import io.github.phantamanta44.pcrossbow.tile.TileLaser;
 import io.github.phantamanta44.pcrossbow.util.NumeralRange;
 import net.minecraft.block.Block;
@@ -32,6 +35,7 @@ public class CommonProxy {
         // TODO Register oredict entries (?)
         // TODO Register recipes
         registerTile(TileLaser.Test.class);
+        registerTile(TileInductor.class);
     }
 
     public void onPostInit() {
@@ -39,20 +43,24 @@ public class CommonProxy {
     }
 
     @SuppressWarnings("unchecked")
-    public void doLasing(World world, float x, float y, float z, Vec3 dir, float initialIntensity, float initialRadius, float radiusRate) {
+    public void doLasing(World world, float x, float y, float z, Vec3 dir, float power, float initialRadius, float radiusRate) {
         dir = dir.normalize();
         Vec3 initialPos = Vec3.createVectorHelper(x + dir.xCoord * 0.5D, y + dir.yCoord * 0.5D, z + dir.zCoord * 0.5D);
-        double range = Math.min(Math.sqrt(initialIntensity / (Math.PI * INTENSITY_CUTOFF)) / radiusRate, 128);
+        double range = Math.min(Math.sqrt(power / (Math.PI * INTENSITY_CUTOFF)) / radiusRate, 128);
         Vec3 maxPotentialPos = initialPos.addVector(range * dir.xCoord, range * dir.yCoord, range * dir.zCoord);
         Vec3 traceStart = initialPos.addVector(dir.xCoord < 0 ? -1 : 0, dir.yCoord < 0 ? -1 : 0, dir.zCoord < 0 ? -1 : 0);
         MovingObjectPosition trace = traceRay(
-                world, traceStart, maxPotentialPos, b -> b.isOpaqueCube() || b instanceof IFluidBlock || b instanceof BlockLiquid, true);
+                world, traceStart, maxPotentialPos,
+                b -> b.isOpaqueCube() || isLaserConsumer(b) || b instanceof IFluidBlock || b instanceof BlockLiquid, true);
         if (trace != null) {
             int tX = trace.blockX, tY = trace.blockY, tZ = trace.blockZ;
-            double intensity = initialIntensity /
-                    (initialRadius + Math.PI * radiusRate * radiusRate * (Math.pow(tX - x, 2) + Math.pow(tY - y, 2) + Math.pow(tZ - z, 2)));
+            double distTraveledSq = Math.pow(tX - x, 2) + Math.pow(tY - y, 2) + Math.pow(tZ - z, 2);
+            double intensity = power / (initialRadius + Math.PI * radiusRate * radiusRate * distTraveledSq);
             Block block = world.getBlock(tX, tY, tZ);
-            if (block instanceof IFluidBlock || block instanceof BlockLiquid) {
+            if (isLaserConsumer(block)) {
+                ((ILaserConsumer)world.getTileEntity(tX, tY, tZ))
+                        .consumeBeam(dir, power, initialRadius + radiusRate * (float)Math.sqrt(distTraveledSq));
+            } else if (block instanceof IFluidBlock || block instanceof BlockLiquid) {
                 Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
                 if (fluid != null && intensity * 60 >= fluid.getTemperature(world, tX, tY, tZ)) {
                     breakBlockNaturally(world, tX, tY, tZ);
@@ -76,7 +84,7 @@ public class CommonProxy {
         ))).stream()
                 .filter(e -> e.boundingBox != null && intersectsLine(e.boundingBox, initialPos, finalPos))
                 .forEach(e -> {
-                    double intensity = initialIntensity /
+                    double intensity = power /
                             (initialRadius + Math.PI * radiusRate * radiusRate * e.getDistanceSq(initialPos.xCoord, initialPos.yCoord, initialPos.zCoord));
                     if (intensity >= 1) {
                         e.setFire((int)Math.floor(intensity * 10));
@@ -84,6 +92,10 @@ public class CommonProxy {
                             e.attackEntityFrom(DamageSource.inFire, Double.valueOf(intensity).floatValue());
                     }
                 });
+    }
+
+    public boolean isLaserConsumer(Block block) {
+        return block.getClass().isAnnotationPresent(LaserConsuming.class);
     }
 
     private void registerTile(Class<? extends TileEntity> clazz) {

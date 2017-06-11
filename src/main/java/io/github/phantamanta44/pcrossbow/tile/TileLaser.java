@@ -84,20 +84,6 @@ public abstract class TileLaser extends TileBasicInventory implements IReconfigu
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        energy.readFromNBT(tag);
-        rotation = tag.getInteger(NBTConst.ROTATION);
-    }
-
-    @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        energy.writeToNBT(tag);
-        tag.setInteger(NBTConst.ROTATION, rotation);
-    }
-
-    @Override
     public boolean canConnectEnergy(ForgeDirection from) {
         return from.ordinal() != rotation;
     }
@@ -115,6 +101,20 @@ public abstract class TileLaser extends TileBasicInventory implements IReconfigu
     @Override
     public int getMaxEnergyStored(ForgeDirection from) {
         return energy.getMaxEnergyStored();
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag) {
+        super.readFromNBT(tag);
+        energy.readFromNBT(tag);
+        rotation = tag.getInteger(NBTConst.ROTATION);
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag) {
+        super.writeToNBT(tag);
+        energy.writeToNBT(tag);
+        tag.setInteger(NBTConst.ROTATION, rotation);
     }
 
     public static class Test extends TileLaser {

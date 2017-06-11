@@ -31,7 +31,6 @@ public class ProjectCrossbow {
 
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
-        PROXY.onPreInit(event.getSuggestedConfigurationFile());
         creativeTab = new CreativeTabs(LangConst.CREATIVE_TAB) {
 
             @Override
@@ -40,6 +39,7 @@ public class ProjectCrossbow {
             }
 
         };
+        PROXY.onPreInit(event.getSuggestedConfigurationFile());
     }
 
     @EventHandler

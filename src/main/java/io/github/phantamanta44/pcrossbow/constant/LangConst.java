@@ -7,6 +7,7 @@ public class LangConst {
     public static final String CREATIVE_TAB = "tab_" + XbowConst.MOD_ID;
 
     public static final String BLOCK_LASER_NAME = "laser";
+    public static final String BLOCK_INDUCTOR_NAME = "inductor";
 
     public static final String INFO_KEY = XbowConst.MOD_ID + ".info.";
     public static final String INFO_ENERGY_STORED = INFO_KEY + "energy";
