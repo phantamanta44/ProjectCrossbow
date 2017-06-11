@@ -111,7 +111,7 @@ public class CommonProxy {
                 Math.max(lineMin.xCoord, lineMax.xCoord),
                 Math.max(lineMin.yCoord, lineMax.yCoord),
                 Math.max(lineMin.zCoord, lineMax.zCoord));
-        Vec3 k = lineMax.subtract(lineMin).normalize();
+        Vec3 k = lineMin.subtract(lineMax).normalize();
         NumeralRange domainX = NumeralRange.between(
                 (prism.minX - lineMin.xCoord) / k.xCoord, (prism.maxX - lineMax.xCoord) / k.xCoord);
         if (domainX == null)
@@ -151,6 +151,7 @@ public class CommonProxy {
                     MovingObjectPosition collision = bi.collisionRayTrace(world, x, y, z, start, end);
 
                     if (collision != null) {
+                        collision.hitVec = start.subtract(end).normalize().subtract(collision.hitVec);
                         return collision;
                     }
                 }
