@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public class ModelInductorBlock extends TileModel<TileInductor> {
 
-    private ModelRenderer edge, vertex, glass, core;
+    private final ModelRenderer edge, vertex, glass, core;
 
     public ModelInductorBlock() {
         edge = new ModelRenderer(this);
