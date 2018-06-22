@@ -1,9 +1,9 @@
-itemGroup.tab_pcrossbow=Project Crossbow
+itemGroup.pcrossbow=Project Crossbow
 
 tile.pcrossbow:laser0.name=Solid-State Laser Casing
 tile.pcrossbow:laser1.name=Gas Laser Casing
 tile.pcrossbow:laser2.name=Laser Diode Casing
 tile.pcrossbow:laser3.name=Atomic Laser Casing
-tile.pcrossbow:inductor0.name=Beam Induction Apparatus
+tile.pcrossbow:inductor0.name=Beam Inductor
 
-pcrossbow.info.energy=Energy Stored
+pcrossbow.info.energy=Energy Buffer

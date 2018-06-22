@@ -1,0 +1,38 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "pcrossbow:laser"
+  },
+  "variants": {
+    "type": {
+      "tier_1": {
+        "textures": {
+          "front": "pcrossbow:blocks/laser_tier_1_front",
+          "side": "pcrossbow:blocks/laser_tier_1_side",
+          "back": "pcrossbow:blocks/laser_tier_1_back"
+        }
+      },
+      "tier_2": {
+        "textures": {
+          "front": "pcrossbow:blocks/laser_tier_2_front",
+          "side": "pcrossbow:blocks/laser_tier_2_side",
+          "back": "pcrossbow:blocks/laser_tier_2_back"
+        }
+      },
+      "tier_3": {
+        "textures": {
+          "front": "pcrossbow:blocks/laser_tier_3_front",
+          "side": "pcrossbow:blocks/laser_tier_3_side",
+          "back": "pcrossbow:blocks/laser_tier_3_back"
+        }
+      },
+      "tier_4": {
+        "textures": {
+          "front": "pcrossbow:blocks/laser_tier_4_front",
+          "side": "pcrossbow:blocks/laser_tier_4_side",
+          "back": "pcrossbow:blocks/laser_tier_4_back"
+        }
+      }
+    }
+  }
+}

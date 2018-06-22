@@ -1,7 +1,14 @@
 package io.github.phantamanta44.pcrossbow.client.sound;
 
 import net.minecraft.client.audio.ITickableSound;
+import net.minecraft.client.audio.Sound;
+import net.minecraft.client.audio.SoundEventAccessor;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.Vec3i;
+
+import javax.annotation.Nullable;
 
 public class ContinuousSound implements ITickableSound {
 
@@ -9,19 +16,28 @@ public class ContinuousSound implements ITickableSound {
     private final float volumeFactor;
     private final float pitchFactor;
     private final float x, y, z;
+    private final SoundCategory category;
     private final int initialTtl;
     private int ttl;
     private int vol;
+    private SoundEventAccessor soundEvent;
+    private Sound sound;
 
-    public ContinuousSound(ResourceLocation resource, float volume, float pitch, float x, float y, float z, int ttl) {
+    public ContinuousSound(ResourceLocation resource, float volume, float pitch, float x, float y, float z,
+                           SoundCategory category, int ttl) {
         this.resource = resource;
         this.volumeFactor = volume / 100F;
         this.pitchFactor = (pitch - 0.5F) / 100F;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.category = category;
         this.ttl = this.initialTtl = ttl;
         this.vol = 1;
+    }
+
+    public ContinuousSound(ResourceLocation resource, float volume, float pitch, Vec3i pos, SoundCategory category, int ttl) {
+        this(resource, volume, pitch, pos.getX(), pos.getY(), pos.getZ(), category, ttl);
     }
 
     @Override
@@ -30,8 +46,26 @@ public class ContinuousSound implements ITickableSound {
     }
 
     @Override
-    public ResourceLocation getPositionedSoundLocation() {
+    public ResourceLocation getSoundLocation() {
         return resource;
+    }
+
+    @Nullable
+    @Override
+    public SoundEventAccessor createAccessor(SoundHandler handler) {
+        soundEvent = handler.getAccessor(resource);
+        sound = soundEvent != null ? soundEvent.cloneEntry() : SoundHandler.MISSING_SOUND;
+        return soundEvent;
+    }
+
+    @Override
+    public Sound getSound() {
+        return sound;
+    }
+
+    @Override
+    public SoundCategory getCategory() {
+        return category;
     }
 
     @Override

@@ -1,10 +1,11 @@
 package io.github.phantamanta44.pcrossbow.util;
 
-import cofh.api.energy.IEnergyReceiver;
+import io.github.phantamanta44.libnine.util.tuple.IPair;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import org.apache.commons.lang3.tuple.Pair;
+import net.minecraftforge.energy.CapabilityEnergy;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,18 +15,20 @@ import java.util.stream.Collectors;
 public class EnergyHelper {
 
     // Adapted from RailTech's io.github.phantamanta44.mcrail.railtech.util.EnergyUtils#distribute(Collection<? extends IEnergyConsumer>, long)
-    public static int distributeAdj(World world, int x, int y, int z, int amount) {
-        Collection<Pair<ForgeDirection, TileEntity>> cons = Arrays.stream(ForgeDirection.VALID_DIRECTIONS)
-                .map(dir -> Pair.of(dir, world.getTileEntity(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ)))
-                .filter(p -> p.getValue() != null && p.getValue() instanceof IEnergyReceiver)
+    public static int distributeAdj(World world, BlockPos pos, int amount) {
+        Collection<IPair<EnumFacing, TileEntity>> cons = Arrays.stream(EnumFacing.values())
+                .map(dir -> IPair.of(dir, world.getTileEntity(pos.add(dir.getDirectionVec()))))
+                .filter(p -> p.getB() != null
+                        && p.getB().hasCapability(CapabilityEnergy.ENERGY, p.getA().getOpposite()))
                 .collect(Collectors.toList());
         int toDis = amount;
         for (int i = 0; !cons.isEmpty() && i < 3; i++) {
             int rate = (int)Math.floor((float)toDis / (float)cons.size());
-            Iterator<Pair<ForgeDirection, TileEntity>> iter = cons.iterator();
+            Iterator<IPair<EnumFacing, TileEntity>> iter = cons.iterator();
             while (iter.hasNext()) {
-                Pair<ForgeDirection, TileEntity> con = iter.next();
-                int transferred = ((IEnergyReceiver)con.getValue()).receiveEnergy(con.getKey(), rate, false);
+                IPair<EnumFacing, TileEntity> con = iter.next();
+                int transferred = con.getB().getCapability(CapabilityEnergy.ENERGY, con.getA().getOpposite())
+                        .receiveEnergy(rate, false);
                 if (transferred < 1)
                     iter.remove();
                 toDis -= transferred;

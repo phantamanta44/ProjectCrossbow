@@ -1,24 +1,44 @@
 package io.github.phantamanta44.pcrossbow.tile;
 
-import cofh.api.energy.EnergyStorage;
-import cofh.api.energy.IEnergyProvider;
-import io.github.phantamanta44.pcrossbow.api.ILaserConsumer;
-import io.github.phantamanta44.pcrossbow.client.handler.ClientTickHandler;
-import io.github.phantamanta44.pcrossbow.tile.base.TileMod;
+import io.github.phantamanta44.libnine.capability.L9AspectEnergy;
+import io.github.phantamanta44.libnine.capability.provider.CapabilityBroker;
+import io.github.phantamanta44.libnine.component.IntReservoir;
+import io.github.phantamanta44.libnine.tile.L9TileEntityTicking;
+import io.github.phantamanta44.libnine.tile.RegisterTile;
+import io.github.phantamanta44.libnine.util.data.serialization.AutoSerialize;
+import io.github.phantamanta44.libnine.util.data.serialization.DataSerialization;
+import io.github.phantamanta44.libnine.util.helper.ByteUtils;
+import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
+import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
+import io.github.phantamanta44.pcrossbow.constant.XbowConst;
 import io.github.phantamanta44.pcrossbow.util.EnergyHelper;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 
-public class TileInductor extends TileMod implements IEnergyProvider, ILaserConsumer {
+import javax.annotation.Nullable;
+
+@RegisterTile(XbowConst.MOD_ID)
+public class TileInductor extends L9TileEntityTicking implements ILaserConsumer {
 
     public static final int MAX_ENERGY = 400000;
 
-    private EnergyStorage energy;
+    private final CapabilityBroker capabilities;
+    @AutoSerialize
+    private final IntReservoir energy;
+    private final DataSerialization serializer;
 
     public TileInductor() {
-        energy = new EnergyStorage(MAX_ENERGY); // TODO Use our own impl?
-        init = true;
+        this.capabilities = new CapabilityBroker();
+        this.energy = new IntReservoir(MAX_ENERGY);
+        this.serializer = new DataSerialization(this);
+        capabilities.put(CapabilityEnergy.ENERGY, new L9AspectEnergy(energy));
+        capabilities.put(XbowCaps.LASER_CONSUMER, this);
+        energy.onQuantityChange((o, n) -> setDirty());
+        markRequiresSync();
+        setInitialized();
     }
 
     @Override
@@ -27,46 +47,52 @@ public class TileInductor extends TileMod implements IEnergyProvider, ILaserCons
     }
 
     @Override
-    public void consumeBeam(Vec3 direction, float power, float radius) {
-        energy.receiveEnergy(80, false);
+    public void consumeBeam(Vec3d direction, float power, float radius) {
+        energy.offer(80, false);
     }
 
     @Override
     protected void tick() {
-        if (energy.getEnergyStored() > 0)
-            EnergyHelper.distributeAdj(worldObj, xCoord, yCoord, zCoord, Math.min(energy.getEnergyStored(), 24000));
+        if (energy.getQuantity() > 0) {
+            EnergyHelper.distributeAdj(world, pos, Math.min(energy.getQuantity(), 24000));
+            setDirty();
+        }
     }
 
     @Override
-    public boolean canConnectEnergy(ForgeDirection from) {
-        return true;
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        return capabilities.hasCapability(capability, facing);
     }
 
+    @Nullable
     @Override
-    public int extractEnergy(ForgeDirection from, int qty, boolean simulate) {
-        return energy.extractEnergy(qty, simulate);
-    }
-
-    @Override
-    public int getEnergyStored(ForgeDirection from) {
-        return energy.getEnergyStored();
-    }
-
-    @Override
-    public int getMaxEnergyStored(ForgeDirection from) {
-        return energy.getMaxEnergyStored();
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        return capabilities.getCapability(capability, facing);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        energy.readFromNBT(tag);
+        serializer.deserializeNBT(tag);
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        energy.writeToNBT(tag);
+        serializer.serializeNBT(tag);
+        return tag;
+    }
+
+    @Override
+    public void serializeBytes(ByteUtils.Writer data) {
+        super.serializeBytes(data);
+        serializer.serializeBytes(data);
+    }
+
+    @Override
+    public void deserializeBytes(ByteUtils.Reader data) {
+        super.deserializeBytes(data);
+        serializer.deserializeBytes(data);
     }
 
 }

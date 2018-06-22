@@ -1,10 +1,8 @@
 package io.github.phantamanta44.pcrossbow.constant;
 
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 
 public class LangConst {
-
-    public static final String CREATIVE_TAB = "tab_" + XbowConst.MOD_ID;
 
     public static final String BLOCK_LASER_NAME = "laser";
     public static final String BLOCK_INDUCTOR_NAME = "inductor";
@@ -17,7 +15,7 @@ public class LangConst {
     }
 
     public static String get(String key) {
-        return StatCollector.translateToLocal(key);
+        return I18n.translateToLocal(key);
     }
 
 }

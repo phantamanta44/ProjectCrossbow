@@ -1,16 +1,17 @@
 [
 {
-  "modid": "pcrossbow",
+  "modid": "prcrossbow",
   "name": "Project Crossbow",
-  "description": "LASERS",
+  "description": "pew pew",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["phantamanta44"],
-  "credits": "Vazkii: some random bits of code; aidancbrady: some ideas about how to program lasers; Team CoFH: the RF API",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": [""]
+  "useDepdencyInformation": true,
+  "dependencies": ["libnine"],
+  "requiredMods": ["libnine"]
 }
 ]

@@ -1,20 +1,22 @@
 package io.github.phantamanta44.pcrossbow.client.fx;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
-public class EntityLaser extends EntityFX {
+public class EntityLaser extends Particle {
 
-    private final Vec3 dir;
+    private final Vec3d dir;
     private final double length, rInit, rFinal;
 
-    public EntityLaser(World world, Vec3 start, Vec3 end, float initialRadius, double power, double decay, int colour) {
-        super(world, start.xCoord, start.yCoord, start.zCoord);
+    public EntityLaser(World world, Vec3d start, Vec3d end, float initialRadius, double power, double decay, int colour) {
+        super(world, start.x, start.y, start.z);
         dir = end.subtract(start);
         length = dir.lengthVector();
         this.rInit = 0.03125 * initialRadius;
@@ -41,17 +43,11 @@ public class EntityLaser extends EntityFX {
         prevPosX = posX;
         prevPosY = posY;
         prevPosZ = posZ;
-        if (particleAge++ >= particleMaxAge)
-            setDead();
+        if (particleAge++ >= particleMaxAge) setExpired();
     }
 
     @Override
-    public boolean shouldRenderInPass(int pass) {
-        return pass == 1;
-    }
-
-    @Override
-    public void renderParticle(Tessellator tess, float partialTick, float rotX, float rotXZ, float rotZ, float rotYZ, float rotXY) {
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_LIGHTING);
@@ -59,40 +55,41 @@ public class EntityLaser extends EntityFX {
         GL11.glDepthMask(false);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 
-        Entity player = Minecraft.getMinecraft().thePlayer;
-        GL11.glTranslatef((float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTick - player.lastTickPosX - (player.posX - player.lastTickPosX) * (double)partialTick),
-                (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTick - player.lastTickPosY - (player.posY - player.lastTickPosY) * (double)partialTick),
-                (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTick - player.lastTickPosZ - (player.posZ - player.lastTickPosZ) * (double)partialTick));
-        GL11.glRotated(270 - Math.atan2(dir.zCoord, dir.xCoord) * 180 / Math.PI, 0, 1, 0);
-        GL11.glRotated(Math.atan2(dir.yCoord, Math.abs(dir.zCoord)) * 180 / Math.PI, 1, 0, 0);
+        Entity player = Minecraft.getMinecraft().player;
+        GL11.glTranslatef((float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - player.lastTickPosX - (player.posX - player.lastTickPosX) * (double)partialTicks),
+                (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - player.lastTickPosY - (player.posY - player.lastTickPosY) * (double)partialTicks),
+                (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - player.lastTickPosZ - (player.posZ - player.lastTickPosZ) * (double)partialTicks));
+        GL11.glRotated(270 - Math.atan2(dir.z, dir.x) * 180 / Math.PI, 0, 1, 0);
+        GL11.glRotated(Math.atan2(dir.y, Math.abs(dir.z)) * 180 / Math.PI, 1, 0, 0);
 
-        tess.startDrawingQuads();
-        tess.setColorRGBA_F(particleRed, particleGreen, particleBlue, particleAlpha);
+        Tessellator tess = Tessellator.getInstance();
 
-        tess.addVertex(rFinal, rFinal, length);
-        tess.addVertex(rFinal, -rFinal, length);
-        tess.addVertex(rInit, -rInit, 0);
-        tess.addVertex(rInit, rInit, 0);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        
+        buffer.pos(rFinal, rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rFinal, -rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rInit, -rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rInit, rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
 
-        tess.addVertex(-rInit, rInit, 0);
-        tess.addVertex(-rInit, -rInit, 0);
-        tess.addVertex(-rFinal, -rFinal, length);
-        tess.addVertex(-rFinal, rFinal, length);
+        buffer.pos(-rInit, rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rInit, -rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rFinal, -rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rFinal, rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
 
-        tess.addVertex(rInit, rInit, 0);
-        tess.addVertex(-rInit, rInit, 0);
-        tess.addVertex(-rFinal, rFinal, length);
-        tess.addVertex(rFinal, rFinal, length);
+        buffer.pos(rInit, rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rInit, rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rFinal, rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rFinal, rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
 
-        tess.addVertex(rFinal, -rFinal, length);
-        tess.addVertex(-rFinal, -rFinal, length);
-        tess.addVertex(-rInit, -rInit, 0);
-        tess.addVertex(rInit, -rInit, 0);
+        buffer.pos(rFinal, -rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rFinal, -rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rInit, -rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rInit, -rInit, 0).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
 
-        tess.addVertex(rFinal, rFinal, length);
-        tess.addVertex(-rFinal, rFinal, length);
-        tess.addVertex(-rFinal, -rFinal, length);
-        tess.addVertex(rFinal, -rFinal, length);
+        buffer.pos(rFinal, rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rFinal, rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rFinal, -rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rFinal, -rFinal, length).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
 
         tess.draw();
 

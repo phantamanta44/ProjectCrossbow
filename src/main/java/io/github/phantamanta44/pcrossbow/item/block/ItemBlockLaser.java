@@ -1,27 +1,25 @@
 package io.github.phantamanta44.pcrossbow.item.block;
 
+import io.github.phantamanta44.pcrossbow.block.BlockLaser;
 import io.github.phantamanta44.pcrossbow.tile.TileLaser;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockPistonBase;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ItemBlockLaser extends ItemBlockPowered {
     
-    public ItemBlockLaser(Block block) {
-        super(block);
+    public ItemBlockLaser(BlockLaser block) {
+        super(block, TileLaser.MAX_ENERGY);
     }
 
     @Override
-    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata) {
-        if (super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata)) {
-            int direction = BlockPistonBase.determineOrientation(world, x, y, z, player);
-            ((TileLaser)world.getTileEntity(x, y, z)).setFacing(direction);
-            return true;
-        } else {
-            return false;
-        }
+    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState) {
+        if (!super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState)) return false;
+        ((TileLaser)world.getTileEntity(pos)).setDirection(EnumFacing.getDirectionFromEntityLiving(pos, player));
+        return true;
     }
     
 }

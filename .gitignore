@@ -7,9 +7,13 @@
 /target/
 /build/
 /out/
+/classes/
 
 # Gradle stuff
 /.gradle/
+gradle.properties
 
 # MinecraftForge
 /eclipse/
+/run/
+/libs/
