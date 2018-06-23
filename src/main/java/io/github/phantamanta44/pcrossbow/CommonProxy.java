@@ -151,10 +151,7 @@ public class CommonProxy {
                         && (si.getCollisionBoundingBox(world, blockPos) != null
                         && (bi.canCollideCheck(si, false)) || (bi instanceof IFluidBlock || bi instanceof BlockLiquid))) {
                     RayTraceResult collision = si.collisionRayTrace(world, blockPos, pos, end);
-                    if (collision != null) {
-                        collision.hitVec = pos.subtract(end).normalize().subtract(collision.hitVec);
-                        return collision;
-                    }
+                    if (collision != null) return collision;
                 }
                 int n = 200;
                 while (n-- >= 0) {

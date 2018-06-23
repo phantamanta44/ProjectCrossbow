@@ -59,8 +59,8 @@ public class EntityLaser extends Particle {
         GL11.glTranslatef((float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - player.lastTickPosX - (player.posX - player.lastTickPosX) * (double)partialTicks),
                 (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - player.lastTickPosY - (player.posY - player.lastTickPosY) * (double)partialTicks),
                 (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - player.lastTickPosZ - (player.posZ - player.lastTickPosZ) * (double)partialTicks));
-        GL11.glRotated(270 - Math.atan2(dir.z, dir.x) * 180 / Math.PI, 0, 1, 0);
-        GL11.glRotated(Math.atan2(dir.y, Math.abs(dir.z)) * 180 / Math.PI, 1, 0, 0);
+        GL11.glRotated(90 - Math.atan2(dir.z, dir.x) * 180 / Math.PI, 0, 1, 0);
+        GL11.glRotated(Math.atan2(dir.y, Math.abs(dir.z)) * 180 / Math.PI, -1, 0, 0);
 
         Tessellator tess = Tessellator.getInstance();
 

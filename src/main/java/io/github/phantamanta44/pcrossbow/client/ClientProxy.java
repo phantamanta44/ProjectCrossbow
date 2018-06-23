@@ -24,6 +24,10 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void doLasing(World world, Vec3d pos, Vec3d dir, float power, float initialRadius, float radiusRate) {
+        if (!world.isRemote) {
+            super.doLasing(world, pos, dir, power, initialRadius, radiusRate);
+            return;
+        }
         dir = dir.normalize();
         Vec3d initialPos = pos.add(dir.scale(0.5D));
         double range = Math.min(Math.sqrt(power / (Math.PI * INTENSITY_CUTOFF)) / radiusRate, 128);
@@ -38,6 +42,9 @@ public class ClientProxy extends CommonProxy {
             WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
             finalPos = isLaserConsumer(finalBlockPos, collisionFace)
                     ? trace.hitVec.add(dir.scale(0.5D)) : trace.hitVec;
+            if (ClientTickHandler.getTick() % 4 == 0) {
+                Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(finalBlockPos, finalBlockPos.getBlockState());
+            }
         }
         Minecraft.getMinecraft().effectRenderer.addEffect(
                 new EntityLaser(world, initialPos, finalPos, initialRadius, power, radiusRate, 0xDD0000));
