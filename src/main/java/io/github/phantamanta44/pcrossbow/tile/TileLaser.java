@@ -37,7 +37,6 @@ public abstract class TileLaser extends L9TileEntityTicking {
     private ContinuousSound sound = null;
 
     public TileLaser(int size) {
-        new Exception().printStackTrace();
         this.energy = new IntReservoir(MAX_ENERGY);
         this.rotation = IDatum.of(EnumFacing.NORTH);
         this.lasing = IDatum.ofBool(false);
