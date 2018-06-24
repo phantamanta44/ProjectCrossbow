@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy {
                 consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else if (ClientTickHandler.getTick() % 3 == 0
                         && PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled) >= 6000D) {
-                Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(finalBlockPos, trace.sideHit);
+                Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(finalBlockPos.getPos(), trace.sideHit);
             }
         }
         Minecraft.getMinecraft().effectRenderer.addEffect(

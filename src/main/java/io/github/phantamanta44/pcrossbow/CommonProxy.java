@@ -47,6 +47,7 @@ public class CommonProxy {
     @SuppressWarnings("unchecked")
     public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir,
                          double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
+        new Exception().printStackTrace(System.out);
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d maxPotentialPos = initialPos.add(dir.scale(range));
@@ -60,16 +61,16 @@ public class CommonProxy {
             double distTravelled = trace.hitVec.distanceTo(initialPos);
             double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled);
             double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
-            IBlockState state = world.getBlockState(finalBlockPos);
+            IBlockState state = finalBlockPos.getBlockState();
             ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
             if (consumer != null) {
                 consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else {
-                float hardness = state.getBlockHardness(world, finalBlockPos);
+                float hardness = state.getBlockHardness(world, finalBlockPos.getPos());
                 if (intensity / 25000D >= hardness && hardness >= 0) {
-                    breakBlockNaturally(world, finalBlockPos);
-                } else if (state.getBlock().isFlammable(world, finalBlockPos, trace.sideHit) && intensity >= 6000D) {
-                    BlockPos adjPos = finalBlockPos.add(trace.sideHit.getDirectionVec());
+                    breakBlockNaturally(world, finalBlockPos.getPos());
+                } else if (state.getBlock().isFlammable(world, finalBlockPos.getPos(), trace.sideHit) && intensity >= 6000D) {
+                    BlockPos adjPos = finalBlockPos.getPos().add(trace.sideHit.getDirectionVec());
                     if (world.isAirBlock(adjPos)) world.setBlockState(adjPos, Blocks.FIRE.getDefaultState());
                 }
             }
