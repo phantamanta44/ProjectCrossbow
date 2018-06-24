@@ -1,53 +1,52 @@
 package io.github.phantamanta44.pcrossbow.client;
 
+import io.github.phantamanta44.libnine.client.event.ClientTickHandler;
 import io.github.phantamanta44.libnine.util.WorldBlockPos;
+import io.github.phantamanta44.libnine.util.function.ITriPredicate;
 import io.github.phantamanta44.pcrossbow.CommonProxy;
-import io.github.phantamanta44.pcrossbow.client.fx.EntityLaser;
-import io.github.phantamanta44.pcrossbow.client.handler.ClientTickHandler;
-import net.minecraft.block.BlockLiquid;
+import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
+import io.github.phantamanta44.pcrossbow.client.fx.ParticleLaser;
+import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+
+import javax.annotation.Nullable;
 
 public class ClientProxy extends CommonProxy {
 
     @Override
-    public void onInit(FMLInitializationEvent event) {
-        super.onInit(event);
-        MinecraftForge.EVENT_BUS.register(new ClientTickHandler());
-    }
-
-    @Override
-    public void doLasing(World world, Vec3d pos, Vec3d dir, float power, float initialRadius, float radiusRate) {
+    public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir,
+                         double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
         if (!world.isRemote) {
-            super.doLasing(world, pos, dir, power, initialRadius, radiusRate);
+            super.doLasing(world, initialPos, unnormDir, power, initialRadius, fluxAngle, src);
             return;
         }
-        dir = dir.normalize();
-        Vec3d initialPos = pos.add(dir.scale(0.5D));
-        double range = Math.min(Math.sqrt(power / (Math.PI * INTENSITY_CUTOFF)) / radiusRate, 128);
+        Vec3d dir = unnormDir.normalize();
+        double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d finalPos = initialPos.add(dir.scale(range));
-        Vec3d traceStart = initialPos.addVector(dir.x < 0 ? -1 : 0, dir.y < 0 ? -1 : 0, dir.z < 0 ? -1 : 0);
-        EnumFacing collisionFace = EnumFacing.getFacingFromVector((float)-dir.x, (float)-dir.y, (float)-dir.z);
-        RayTraceResult trace = traceRay(
-                world, traceStart, finalPos,
-                (b, p) -> b.isOpaqueCube() || isLaserConsumer(p, collisionFace)
-                        || b instanceof IFluidBlock || b instanceof BlockLiquid, true);
+        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred = (b, p, t) ->
+                b.isOpaqueCube() || (t != null && getLaserConsumer(p, dir, power,
+                        PhysicsUtils.calculateRadius(initialRadius, fluxAngle, t.hitVec.distanceTo(initialPos)), fluxAngle, t) != null);
+        if (src != null) pred = pred.pre((b, p, t) -> !p.equals(src));
+        RayTraceResult trace = traceRay(world, initialPos, finalPos, pred);
         if (trace != null) {
             WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
-            finalPos = isLaserConsumer(finalBlockPos, collisionFace)
-                    ? trace.hitVec.add(dir.scale(0.5D)) : trace.hitVec;
-            if (ClientTickHandler.getTick() % 4 == 0) {
-                Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(finalBlockPos, finalBlockPos.getBlockState());
+            finalPos = trace.hitVec;
+            double distTravelled = trace.hitVec.distanceTo(initialPos);
+            double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
+            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
+            if (consumer != null) {
+                consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
+            } else if (ClientTickHandler.getTick() % 3 == 0
+                        && PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled) >= 6000D) {
+                Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(finalBlockPos, trace.sideHit);
             }
         }
         Minecraft.getMinecraft().effectRenderer.addEffect(
-                new EntityLaser(world, initialPos, finalPos, initialRadius, power, radiusRate, 0xDD0000));
+                new ParticleLaser(world, initialPos, finalPos, initialRadius, power, fluxAngle, 0xDD0000));
     }
 
 }

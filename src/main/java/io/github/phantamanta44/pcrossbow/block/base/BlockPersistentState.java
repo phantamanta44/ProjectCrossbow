@@ -2,6 +2,7 @@ package io.github.phantamanta44.pcrossbow.block.base;
 
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
+import io.github.phantamanta44.libnine.util.helper.WorldUtils;
 import io.github.phantamanta44.pcrossbow.constant.NBTConst;
 import io.github.phantamanta44.pcrossbow.item.base.ItemBlockPersistentState;
 import net.minecraft.block.material.Material;
@@ -31,7 +32,7 @@ public abstract class BlockPersistentState extends L9BlockStated {
 
     public ItemStack getPersistingItemStack(IBlockAccess world, BlockPos pos, IBlockState state) {
         ItemStack stack = new ItemStack(this, 1, getMetaFromState(state));
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = WorldUtils.getTileSafely(world, pos);
         if (tile != null) {
             if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
             NBTTagCompound itemBlockStateTag = new NBTTagCompound();
@@ -48,7 +49,7 @@ public abstract class BlockPersistentState extends L9BlockStated {
 
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = WorldUtils.getTileSafely(world, pos);
         if (tile != null) {
             drops.add(getPersistingItemStack(world, pos, state));
         } else {

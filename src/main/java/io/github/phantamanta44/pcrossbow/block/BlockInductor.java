@@ -1,16 +1,15 @@
 package io.github.phantamanta44.pcrossbow.block;
 
+import io.github.phantamanta44.libnine.LibNine;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
 import io.github.phantamanta44.pcrossbow.block.base.BlockPersistentState;
+import io.github.phantamanta44.pcrossbow.client.render.TESRInductor;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
 import io.github.phantamanta44.pcrossbow.item.block.ItemBlockPowered;
 import io.github.phantamanta44.pcrossbow.tile.TileInductor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
-
-import java.util.List;
 
 public class BlockInductor extends BlockPersistentState {
 
@@ -22,13 +21,14 @@ public class BlockInductor extends BlockPersistentState {
     }
 
     @Override
-    protected void collectProperties(List<IProperty<?>> props) {
-        // NO-OP
+    protected L9ItemBlock initItemBlock() {
+        return new ItemBlockPowered(this, TileInductor.MAX_ENERGY);
     }
 
     @Override
-    protected L9ItemBlock initItemBlock() {
-        return new ItemBlockPowered(this, TileInductor.MAX_ENERGY);
+    protected void initModel() {
+        super.initModel();
+        LibNine.PROXY.getRegistrar().queueTESRReg(TileInductor.class, new TESRInductor());
     }
 
     @Override

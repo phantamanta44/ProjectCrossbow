@@ -9,7 +9,11 @@ import javax.annotation.Nullable;
 
 public interface ILaserConsumer {
 
-    void consumeBeam(Vec3d direction, float power, float radius);
+    void consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle);
+
+    default boolean canConsumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
+        return true;
+    }
 
     class Serializer implements Capability.IStorage<ILaserConsumer> {
 
@@ -37,7 +41,7 @@ public interface ILaserConsumer {
         }
 
         @Override
-        public void consumeBeam(Vec3d direction, float power, float radius) {
+        public void consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
             // NO-OP
         }
 

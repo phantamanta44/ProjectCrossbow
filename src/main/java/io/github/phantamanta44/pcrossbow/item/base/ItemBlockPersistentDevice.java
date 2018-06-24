@@ -29,8 +29,8 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
         if (nbt == null) return null;
-        CapabilityBroker provider = new CapabilityBroker();
-        provider.put(CapabilityEnergy.ENERGY, new L9AspectEnergy(new EnergyReservoir(stack, this)));
+        CapabilityBroker provider = new CapabilityBroker()
+                .with(CapabilityEnergy.ENERGY, new L9AspectEnergy(new EnergyReservoir(stack, this)));
         return provider;
     }
 

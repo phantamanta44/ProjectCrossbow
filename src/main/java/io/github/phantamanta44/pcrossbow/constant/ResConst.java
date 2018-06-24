@@ -22,5 +22,6 @@ public class ResConst {
 
     public static final String MODEL_BLOCK_KEY = MODEL_KEY + "block/";
     public static final ResourceLocation MODEL_INDUCTOR = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "inductor.png");
+    public static final ResourceLocation MODEL_MIRROR = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "mirror.png");
 
 }

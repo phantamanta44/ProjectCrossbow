@@ -2,6 +2,7 @@ package io.github.phantamanta44.pcrossbow.item.base;
 
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.item.L9ItemBlockStated;
+import io.github.phantamanta44.libnine.util.helper.WorldUtils;
 import io.github.phantamanta44.pcrossbow.constant.NBTConst;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
@@ -24,7 +25,7 @@ public class ItemBlockPersistentState extends L9ItemBlockStated {
     public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side,
                                 float hitX, float hitY, float hitZ, IBlockState newState) {
         if (super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState)) {
-            TileEntity tile = world.getTileEntity(pos);
+            TileEntity tile = WorldUtils.getTileSafely(world, pos);
             tile.readFromNBT(getStoredBlockState(stack));
             tile.setPos(pos);
             return true;

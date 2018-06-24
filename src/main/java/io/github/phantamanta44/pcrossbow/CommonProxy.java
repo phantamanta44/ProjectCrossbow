@@ -1,28 +1,29 @@
 package io.github.phantamanta44.pcrossbow;
 
 import io.github.phantamanta44.libnine.util.WorldBlockPos;
+import io.github.phantamanta44.libnine.util.function.ITriPredicate;
+import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
 import io.github.phantamanta44.pcrossbow.item.XbowItems;
 import io.github.phantamanta44.pcrossbow.util.NumeralRange;
+import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import javax.annotation.Nullable;
-import java.util.function.BiPredicate;
 
 public class CommonProxy {
 
@@ -45,35 +46,33 @@ public class CommonProxy {
     }
 
     @SuppressWarnings("unchecked")
-    public void doLasing(World world, Vec3d pos, Vec3d dir, float power, float initialRadius, float radiusRate) {
-        dir = dir.normalize();
-        Vec3d initialPos = pos.add(dir.scale(0.5D));
-        double range = Math.min(Math.sqrt(power / (Math.PI * INTENSITY_CUTOFF)) / radiusRate, 128);
+    public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir,
+                         double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
+        Vec3d dir = unnormDir.normalize();
+        double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d maxPotentialPos = initialPos.add(dir.scale(range));
-        Vec3d traceStart = initialPos.addVector(dir.x < 0 ? -1 : 0, dir.y < 0 ? -1 : 0, dir.z < 0 ? -1 : 0);
-        EnumFacing collisionFace = EnumFacing.getFacingFromVector((float)-dir.x, (float)-dir.y, (float)-dir.z);
-        RayTraceResult trace = traceRay(
-                world, traceStart, maxPotentialPos,
-                (b, p) -> b.isOpaqueCube() || isLaserConsumer(p, collisionFace)
-                        || b instanceof IFluidBlock || b instanceof BlockLiquid, true);
+        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred = (b, p, t) ->
+                b.isOpaqueCube() || (t != null && getLaserConsumer(p, dir, power,
+                        PhysicsUtils.calculateRadius(initialRadius, fluxAngle, t.hitVec.distanceTo(initialPos)), fluxAngle, t) != null);
+        if (src != null) pred = pred.pre((b, p, t) -> !p.equals(src));
+        RayTraceResult trace = traceRay(world, initialPos, maxPotentialPos, pred);
         if (trace != null) {
-            WorldBlockPos finalPos = new WorldBlockPos(world, trace.getBlockPos());
-            double distTraveledSq = finalPos.distanceSqToCenter(pos.x, pos.y, pos.z);
-            double intensity = power / (initialRadius + Math.PI * radiusRate * radiusRate * distTraveledSq);
-            IBlockState state = world.getBlockState(finalPos);
-            if (isLaserConsumer(finalPos, collisionFace)) {
-                finalPos.getTileEntity().getCapability(XbowCaps.LASER_CONSUMER, collisionFace)
-                        .consumeBeam(dir, power, initialRadius + radiusRate * (float)Math.sqrt(distTraveledSq));
-            } else if (state.getBlock() instanceof IFluidBlock || state.getBlock() instanceof BlockLiquid) {
-                Fluid fluid = FluidRegistry.lookupFluidForBlock(state.getBlock());
-                if (fluid != null && intensity * 60 >= fluid.getTemperature(world, finalPos)) {
-                    breakBlockNaturally(world, finalPos);
-                    world.playEvent(1004, finalPos, 0);
-                    world.playEvent(2000, finalPos, 1);
-                }
+            WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
+            double distTravelled = trace.hitVec.distanceTo(initialPos);
+            double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled);
+            double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
+            IBlockState state = world.getBlockState(finalBlockPos);
+            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
+            if (consumer != null) {
+                consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else {
-                float hardness = state.getBlockHardness(world, finalPos);
-                if (intensity * 0.03D >= hardness && hardness >= 0) breakBlockNaturally(world, finalPos);
+                float hardness = state.getBlockHardness(world, finalBlockPos);
+                if (intensity / 25000D >= hardness && hardness >= 0) {
+                    breakBlockNaturally(world, finalBlockPos);
+                } else if (state.getBlock().isFlammable(world, finalBlockPos, trace.sideHit) && intensity >= 6000D) {
+                    BlockPos adjPos = finalBlockPos.add(trace.sideHit.getDirectionVec());
+                    if (world.isAirBlock(adjPos)) world.setBlockState(adjPos, Blocks.FIRE.getDefaultState());
+                }
             }
         }
         Vec3d finalPos = trace != null ? trace.hitVec : maxPotentialPos;
@@ -87,19 +86,26 @@ public class CommonProxy {
         )).stream()
                 .filter(e -> intersectsLine(e.getEntityBoundingBox(), initialPos, finalPos))
                 .forEach(e -> {
-                    double intensity = power /
-                            (initialRadius + Math.PI * radiusRate * radiusRate * e.getDistanceSq(initialPos.x, initialPos.y, initialPos.z));
-                    if (intensity >= 1) {
-                        e.setFire((int)Math.floor(intensity * 10));
-                        if (e.hurtResistantTime <= 0)
-                            e.attackEntityFrom(DamageSource.IN_FIRE, Double.valueOf(intensity).floatValue());
+                    double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle,
+                            e.getDistance(initialPos.x, initialPos.y, initialPos.z));
+                    if (intensity >= 5000) {
+                        e.setFire((int)Math.floor(intensity / 250D));
+                        e.attackEntityFrom(DamageSource.IN_FIRE, Double.valueOf(intensity / 5000D).floatValue());
                     }
                 });
     }
+    public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir, double power, double initialRadius, double fluxAngle) {
+        doLasing(world, initialPos, unnormDir, power, initialRadius, fluxAngle, null);
+    }
 
-    public boolean isLaserConsumer(WorldBlockPos pos, EnumFacing face) {
+    @Nullable
+    public ILaserConsumer getLaserConsumer(WorldBlockPos pos, Vec3d dir,
+                                           double power, double radius, double fluxAngle, RayTraceResult trace) {
         TileEntity tile = pos.getTileEntity();
-        return tile != null && tile.hasCapability(XbowCaps.LASER_CONSUMER, face);
+        if (tile == null || !tile.hasCapability(XbowCaps.LASER_CONSUMER, trace.sideHit)) return null;
+        ILaserConsumer aspect = tile.getCapability(XbowCaps.LASER_CONSUMER, trace.sideHit);
+        return (aspect != null && aspect.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle))
+                ? aspect : null;
     }
 
     public boolean intersectsLine(AxisAlignedBB prism, Vec3d lineMin, Vec3d lineMax) {
@@ -129,13 +135,13 @@ public class CommonProxy {
 
     @Nullable
     public RayTraceResult traceRay(World world, Vec3d start, Vec3d end,
-                                   BiPredicate<IBlockState, WorldBlockPos> cutoff) {
-        return traceRay(world, start, end, cutoff, false);
+                                   ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> cutoff) {
+        return traceRay(world, start, end, cutoff, true);
     }
 
     @Nullable
     public RayTraceResult traceRay(World world, Vec3d pos, Vec3d end,
-                                   BiPredicate<IBlockState, WorldBlockPos> cutoff, boolean considerInitial) {
+                                   ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> cutoff, boolean checkInitial) {
         if (!Double.isNaN(pos.x) && !Double.isNaN(pos.y) && !Double.isNaN(pos.z)) {
             if (!Double.isNaN(end.x) && !Double.isNaN(end.y) && !Double.isNaN(end.z)) {
                 int xf = MathHelper.floor(end.x);
@@ -147,11 +153,14 @@ public class CommonProxy {
                 BlockPos blockPos = new BlockPos(x, y, z);
                 IBlockState si = world.getBlockState(blockPos);
                 Block bi = si.getBlock();
-                if (considerInitial && cutoff.test(si, new WorldBlockPos(world, blockPos))
+                RayTraceResult collision = si.collisionRayTrace(world, blockPos, pos, end);
+                if (checkInitial && cutoff.test(si, new WorldBlockPos(world, blockPos), collision)
                         && (si.getCollisionBoundingBox(world, blockPos) != null
                         && (bi.canCollideCheck(si, false)) || (bi instanceof IFluidBlock || bi instanceof BlockLiquid))) {
-                    RayTraceResult collision = si.collisionRayTrace(world, blockPos, pos, end);
-                    if (collision != null) return collision;
+                    if (collision != null) {
+                        collision.hitVec = collision.hitVec.subtract(collision.hitVec.subtract(pos).normalize());
+                        return collision;
+                    }
                 }
                 int n = 200;
                 while (n-- >= 0) {
@@ -216,10 +225,10 @@ public class CommonProxy {
                     IBlockState currentState = world.getBlockState(blockPos);
                     Block currentBlock = currentState.getBlock();
                     boolean isLiquid = currentBlock instanceof IFluidBlock || currentBlock instanceof BlockLiquid;
-                    if (cutoff.test(currentState, new WorldBlockPos(world, blockPos))
+                    collision = currentState.collisionRayTrace(world, blockPos, pos, end);
+                    if (cutoff.test(currentState, new WorldBlockPos(world, blockPos), collision)
                             && (currentState.getCollisionBoundingBox(world, blockPos) != null || isLiquid)) {
                         if (isLiquid || currentBlock.canCollideCheck(currentState, false)) {
-                            RayTraceResult collision = currentState.collisionRayTrace(world, blockPos, pos, end);
                             if (collision != null) return collision;
                         }
                     }
