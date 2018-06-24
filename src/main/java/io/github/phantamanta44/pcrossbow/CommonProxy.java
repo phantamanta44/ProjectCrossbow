@@ -6,7 +6,6 @@ import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
 import io.github.phantamanta44.pcrossbow.item.XbowItems;
-import io.github.phantamanta44.pcrossbow.util.NumeralRange;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -109,28 +108,23 @@ public class CommonProxy {
     }
 
     public boolean intersectsLine(AxisAlignedBB prism, Vec3d lineMin, Vec3d lineMax) {
-        lineMin = new Vec3d(
-                Math.min(lineMin.x, lineMax.x),
-                Math.min(lineMin.y, lineMax.y),
-                Math.min(lineMin.z, lineMax.z));
-        lineMax = new Vec3d(
-                Math.max(lineMin.x, lineMax.x),
-                Math.max(lineMin.y, lineMax.y),
-                Math.max(lineMin.z, lineMax.z));
-        Vec3d k = lineMin.subtract(lineMax).normalize();
-        NumeralRange domainX = NumeralRange.between(
-                (prism.minX - lineMin.x) / k.x, (prism.maxX - lineMax.x) / k.x);
-        if (domainX == null)
-            return false;
-        NumeralRange domainY = NumeralRange.between(
-                (prism.minY - lineMin.y) / k.y, (prism.maxY - lineMax.y) / k.y);
-        if (domainY == null)
-            return false;
-        NumeralRange domainZ = NumeralRange.between(
-                (prism.minZ - lineMin.z) / k.z, (prism.maxZ - lineMax.z) / k.z);
-        if (domainZ == null)
-            return false;
-        return domainX.intersect(domainY) && domainX.intersect(domainZ);
+        double x1 = Math.min(lineMin.x, lineMax.x), x2 = Math.max(lineMin.x, lineMax.x), dx = x2 - x1;
+        double y1 = Math.min(lineMin.y, lineMax.y), y2 = Math.max(lineMin.y, lineMax.y), dy = y2 - y1;
+        double z1 = Math.min(lineMin.z, lineMax.z), z2 = Math.max(lineMin.z, lineMax.z), dz = z2 - z1;
+        double dydx = dy / dx, dzdx = dz / dx, dzdy = dz / dy;
+        double inter1, inter2;
+        // project to xy plane
+        inter1 = (prism.minX - x1) * dydx + y1;
+        inter2 = (prism.maxX - x1) * dydx + y1;
+        if (inter1 > prism.maxY || inter2 < prism.minY) return false;
+        // project to xz plane
+        inter1 = (prism.minX - x1) * dzdx + z1;
+        inter2 = (prism.maxX - x1) * dzdx + z1;
+        if (inter1 > prism.maxZ || inter2 < prism.minZ) return false;
+        // project to yz plane
+        inter1 = (prism.minY - y1) * dzdy + z1;
+        inter2 = (prism.maxY - y1) * dzdy + z1;
+        return inter1 <= prism.maxZ && inter2 >= prism.minZ;
     }
 
     @Nullable

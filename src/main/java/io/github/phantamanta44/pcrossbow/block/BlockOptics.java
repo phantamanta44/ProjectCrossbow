@@ -16,10 +16,14 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockOptics extends L9BlockStated {
+
+    private static final AxisAlignedBB BB_MIRROR = new AxisAlignedBB(0.125D, 0.125D, 0.125D, 0.875D, 0.875D, 0.875D);
 
     public BlockOptics() {
         super(LangConst.BLOCK_OPTICS_NAME, Material.GLASS);
@@ -74,6 +78,15 @@ public class BlockOptics extends L9BlockStated {
             }
         }
         return false;
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
+        if (type == Type.MIRROR) {
+            return BB_MIRROR;
+        }
+        return FULL_BLOCK_AABB;
     }
 
     @Override

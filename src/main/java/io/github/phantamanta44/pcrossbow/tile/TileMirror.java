@@ -6,7 +6,6 @@ import io.github.phantamanta44.libnine.tile.RegisterTile;
 import io.github.phantamanta44.libnine.util.WorldBlockPos;
 import io.github.phantamanta44.libnine.util.data.serialization.AutoSerialize;
 import io.github.phantamanta44.libnine.util.data.serialization.IDatum;
-import io.github.phantamanta44.libnine.util.helper.ByteUtils;
 import io.github.phantamanta44.libnine.util.math.LinAlUtils;
 import io.github.phantamanta44.pcrossbow.Xbow;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
@@ -44,12 +43,6 @@ public class TileMirror extends L9TileEntity implements ILaserConsumer {
     public void consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
         Xbow.PROXY.doLasing(world, pos, LinAlUtils.reflect2D(dir.scale(-1D), getNorm()),
                 power, radius, fluxAngle, new WorldBlockPos(world, this.pos));
-    }
-
-    @Override
-    public void deserializeBytes(ByteUtils.Reader data) {
-        super.deserializeBytes(data);
-        System.out.println(getNorm());
     }
 
 }
