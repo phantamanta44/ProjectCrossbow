@@ -47,7 +47,6 @@ public class CommonProxy {
     @SuppressWarnings("unchecked")
     public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir,
                          double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
-        new Exception().printStackTrace(System.out);
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d maxPotentialPos = initialPos.add(dir.scale(range));
