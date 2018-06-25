@@ -4,6 +4,16 @@
     "model": "pcrossbow:model/block/inductor"
   },
   "elements": [{
+    "from": [6, 6, 6], "to": [10, 10, 10],
+    "faces": {
+      "down": { "uv": [5, 0, 6, 1], "texture": "#model" },
+      "up": { "uv": [6, 0, 7, 1], "texture": "#model" },
+      "north": { "uv": [4, 1, 5, 2], "texture": "#model" },
+      "east": { "uv": [5, 1, 6, 2], "texture": "#model" },
+      "south": { "uv": [6, 1, 7, 2], "texture": "#model" },
+      "west": { "uv": [7, 1, 8, 2], "texture": "#model" }
+    }
+  }, {
     "from": [0, 0, 3], "to": [3, 3, 13],
     "faces": {
       "down": { "uv": [3.25, 0, 4, 2.5], "texture": "#model" },

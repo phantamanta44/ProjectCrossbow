@@ -50,8 +50,8 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
 
     @Override
     public void consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
-        if (!world.isRemote) {
-            inductionTime = System.currentTimeMillis();
+        if (world.isRemote) {
+            inductionTime = world.getTotalWorldTime();
         } else {
             energy.offer(80, true);
         }

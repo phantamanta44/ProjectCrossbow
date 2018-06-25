@@ -3,10 +3,12 @@ package io.github.phantamanta44.pcrossbow.block;
 import io.github.phantamanta44.libnine.LibNine;
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.block.state.IBlockModelMapper;
+import io.github.phantamanta44.libnine.item.L9ItemBlock;
 import io.github.phantamanta44.libnine.util.Accrue;
 import io.github.phantamanta44.pcrossbow.block.base.XbowProps;
 import io.github.phantamanta44.pcrossbow.client.render.TESRMirror;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
+import io.github.phantamanta44.pcrossbow.item.block.ItemBlockOptics;
 import io.github.phantamanta44.pcrossbow.tile.TileMirror;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -36,6 +38,11 @@ public class BlockOptics extends L9BlockStated {
             }
             throw new IllegalStateException("Invalid optics meta!");
         });
+    }
+
+    @Override
+    protected L9ItemBlock initItemBlock() {
+        return new ItemBlockOptics(this);
     }
 
     @Override
@@ -102,6 +109,10 @@ public class BlockOptics extends L9BlockStated {
 
         Type(String serializableName) {
             this.serializableName = serializableName;
+        }
+
+        public String getItemModel() {
+            return serializableName;
         }
 
         @Override
