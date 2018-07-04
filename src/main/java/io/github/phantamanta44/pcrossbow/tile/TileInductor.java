@@ -17,16 +17,11 @@ import net.minecraftforge.energy.CapabilityEnergy;
 @RegisterTile(XbowConst.MOD_ID)
 public class TileInductor extends L9TileEntityTicking implements ILaserConsumer {
 
-    public static final int MAX_ENERGY = 400000;
-
     @AutoSerialize
     private final IntReservoir energy;
 
-    private long inductionTime;
-
     public TileInductor() {
-        this.energy = new IntReservoir(MAX_ENERGY);
-        this.inductionTime = 0;
+        this.energy = new IntReservoir(Integer.MAX_VALUE);
         energy.onQuantityChange((o, n) -> setDirty());
         markRequiresSync();
         setInitialized();
@@ -39,8 +34,8 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
                 .with(XbowCaps.LASER_CONSUMER, this);
     }
 
-    public long getInductionTime() {
-        return inductionTime;
+    public int getEnergyStored() {
+        return energy.getQuantity();
     }
 
     @Override
@@ -50,18 +45,19 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
 
     @Override
     public void consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
-        if (world.isRemote) {
-            inductionTime = world.getTotalWorldTime();
-        } else {
-            energy.offer(80, true);
-        }
+        if (!world.isRemote) energy.offer(Math.max((int)Math.floor(power * (2 - Math.pow(Math.E, radius / 0.69315D))), 0), true);
     }
 
     @Override
     protected void tick() {
         if (!world.isRemote) {
             if (energy.getQuantity() > 0) {
-                energy.draw(EnergyUtils.distributeAdj(world, pos, energy.draw(24000, false)), true);
+                energy.draw(EnergyUtils.distributeAdj(world, pos, energy.getQuantity()), true);
+                if (energy.getQuantity() <= 240) {
+                    energy.setQuantity(0);
+                } else {
+                    energy.setQuantity((int)Math.ceil(energy.getQuantity() / 3F));
+                }
                 setDirty();
             }
         }

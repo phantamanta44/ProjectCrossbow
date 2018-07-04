@@ -58,7 +58,7 @@ public class BlockLaser extends BlockPersistentState {
     public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
         TileLaser tile = getTileEntity(world, pos);
         if (tile != null) {
-            tile.setDirection(tile.getDirection() == axis.getOpposite() ? axis : axis.getOpposite());
+            tile.setDirection(tile.getDirection() == axis ? axis.getOpposite() : axis);
             world.notifyNeighborsOfStateChange(pos, this, true);
             return true;
         }

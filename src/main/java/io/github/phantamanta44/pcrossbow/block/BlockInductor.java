@@ -1,19 +1,15 @@
 package io.github.phantamanta44.pcrossbow.block;
 
 import io.github.phantamanta44.libnine.LibNine;
-import io.github.phantamanta44.libnine.item.L9ItemBlock;
-import io.github.phantamanta44.pcrossbow.block.base.BlockPersistentState;
+import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRInductor;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
-import io.github.phantamanta44.pcrossbow.item.base.ItemBlockPowered;
 import io.github.phantamanta44.pcrossbow.tile.TileInductor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public class BlockInductor extends BlockPersistentState {
+public class BlockInductor extends L9BlockStated {
 
     public BlockInductor() {
         super(LangConst.BLOCK_INDUCTOR_NAME, Material.REDSTONE_LIGHT);
@@ -23,24 +19,9 @@ public class BlockInductor extends BlockPersistentState {
     }
 
     @Override
-    protected L9ItemBlock initItemBlock() {
-        return new ItemBlockPowered(this, TileInductor.MAX_ENERGY);
-    }
-
-    @Override
     protected void initModel() {
         super.initModel();
         LibNine.PROXY.getRegistrar().queueTESRReg(TileInductor.class, new TESRInductor());
-    }
-
-    @Override
-    public boolean hasComparatorInputOverride(IBlockState state) {
-        return true;
-    }
-
-    @Override
-    public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
-        return super.getComparatorInputOverride(blockState, worldIn, pos);
     }
 
     @Override

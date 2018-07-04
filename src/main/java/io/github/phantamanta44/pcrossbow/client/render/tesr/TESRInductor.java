@@ -17,15 +17,14 @@ public class TESRInductor extends TileEntitySpecialRenderer<TileInductor> {
     @Override
     public void render(TileInductor te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         if (MinecraftForgeClient.getRenderPass() != 1) return;
-        long indTicks = getWorld().getTotalWorldTime() - te.getInductionTime();
-        if (indTicks < 17L) {
+        if (te.getEnergyStored() > 0) {
             GlStateManager.pushMatrix();
             GlStateManager.disableTexture2D();
             GlStateManager.disableLighting();
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
             GlStateManager.translate(x + 0.5D, y + 0.5D, z + 0.5D);
-            GlStateManager.color(1F, 0F, 0F, 1F - indTicks / 17F);
+            GlStateManager.color(1F, 0F, 0F, Math.min(te.getEnergyStored() / 2400F, 1F));
             core.render((getWorld().getTotalWorldTime() + partialTicks) / 4F);
             GlStateManager.popMatrix();
             GlStateManager.enableTexture2D();
