@@ -13,7 +13,7 @@ public class ItemBlockOptics extends L9ItemBlockStated {
 
     @Override
     public String getModelName(VirtualState state) {
-        return state.get(XbowProps.OPTICS_TYPE).getItemModel();
+        return state.get(XbowProps.OPTICS_TYPE).getModelName();
     }
 
 }

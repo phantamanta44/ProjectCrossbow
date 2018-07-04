@@ -2,6 +2,7 @@ package io.github.phantamanta44.pcrossbow.block.base;
 
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
+import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.constant.NBTConst;
 import io.github.phantamanta44.pcrossbow.item.base.ItemBlockPersistentState;
 import net.minecraft.block.material.Material;
@@ -10,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -18,7 +20,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public abstract class BlockPersistentState extends L9BlockStated {
+public abstract class BlockPersistentState extends L9BlockStated implements IDismantleable {
 
     public BlockPersistentState(String name, Material material) {
         super(name, material);
@@ -66,6 +68,11 @@ public abstract class BlockPersistentState extends L9BlockStated {
                              @Nullable TileEntity te, ItemStack stack) {
         super.harvestBlock(world, player, pos, state, te, stack);
         world.setBlockToAir(pos);
+    }
+
+    @Override
+    public void dismantle(EntityPlayer player, World world, BlockPos pos, IBlockState state, EnumFacing face) {
+        WorldUtils.dropItem(world, pos, getPersistingItemStack(world, pos, state));
     }
 
 }

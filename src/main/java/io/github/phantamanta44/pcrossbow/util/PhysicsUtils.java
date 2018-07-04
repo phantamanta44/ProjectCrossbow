@@ -2,6 +2,9 @@ package io.github.phantamanta44.pcrossbow.util;
 
 public class PhysicsUtils {
 
+    public static final double C2 = 1D / Math.sqrt(2D);
+    public static final double C3 = 1D / Math.sqrt(3D);
+
     public static double calculateRange(double power, double initialRadius, double fluxAngle, double maxIntensity) {
         return (Math.sqrt(power / (Math.PI * maxIntensity)) - initialRadius) / Math.tan(fluxAngle);
     }

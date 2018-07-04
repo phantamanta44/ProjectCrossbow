@@ -2,16 +2,16 @@ package io.github.phantamanta44.pcrossbow.tile;
 
 import io.github.phantamanta44.libnine.capability.L9AspectEnergy;
 import io.github.phantamanta44.libnine.capability.provider.CapabilityBroker;
+import io.github.phantamanta44.libnine.client.sound.ContinuousSound;
+import io.github.phantamanta44.libnine.client.sound.SingleSound;
 import io.github.phantamanta44.libnine.component.IntReservoir;
 import io.github.phantamanta44.libnine.tile.L9TileEntityTicking;
 import io.github.phantamanta44.libnine.tile.RegisterTile;
-import io.github.phantamanta44.libnine.util.WorldBlockPos;
+import io.github.phantamanta44.libnine.util.data.ByteUtils;
 import io.github.phantamanta44.libnine.util.data.serialization.AutoSerialize;
 import io.github.phantamanta44.libnine.util.data.serialization.IDatum;
-import io.github.phantamanta44.libnine.util.helper.WorldUtils;
+import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.Xbow;
-import io.github.phantamanta44.pcrossbow.client.sound.ContinuousSound;
-import io.github.phantamanta44.pcrossbow.client.sound.SingleSound;
 import io.github.phantamanta44.pcrossbow.constant.ResConst;
 import io.github.phantamanta44.pcrossbow.constant.XbowConst;
 import net.minecraft.client.Minecraft;
@@ -33,13 +33,17 @@ public abstract class TileLaser extends L9TileEntityTicking {
     @AutoSerialize
     private final IDatum.OfBool lasing;
 
-    private long lastLasingTime = 0;
-    private ContinuousSound sound = null;
+    private EnumFacing clientFace;
+    private long lastLasingTime;
+    private ContinuousSound sound;
 
     public TileLaser(int size) {
         this.energy = new IntReservoir(MAX_ENERGY);
         this.rotation = IDatum.of(EnumFacing.NORTH);
         this.lasing = IDatum.ofBool(false);
+        this.clientFace = EnumFacing.NORTH;
+        this.lastLasingTime = 0L;
+        this.sound = null;
         energy.onQuantityChange((o, n) -> setDirty());
         markRequiresSync();
         setInitialized();
@@ -65,7 +69,7 @@ public abstract class TileLaser extends L9TileEntityTicking {
             if (energy.draw(80, true) == 80) {
                 Vec3d dir = new Vec3d(rotation.get().getDirectionVec());
                 Xbow.PROXY.doLasing(world, WorldUtils.getBlockCenter(pos).add(dir.scale(0.5D)), dir,
-                        30000D, 0.125D, 0.0025D, new WorldBlockPos(world, pos));
+                        30000D, 0.125D, 0.0025D, getWorldPos());
                 if (world.isRemote) {
                     long currentTick = world.getTotalWorldTime();
                     if (!lasing.isTrue() && currentTick - lastLasingTime > 30) {
@@ -90,6 +94,15 @@ public abstract class TileLaser extends L9TileEntityTicking {
             }
         } else {
             lasing.setBool(false);
+        }
+    }
+
+    @Override
+    public void deserializeBytes(ByteUtils.Reader data) {
+        super.deserializeBytes(data);
+        if (clientFace != getDirection()) {
+            world.markBlockRangeForRenderUpdate(pos, pos);
+            clientFace = getDirection();
         }
     }
 

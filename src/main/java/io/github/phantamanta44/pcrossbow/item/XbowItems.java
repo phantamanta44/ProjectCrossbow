@@ -5,9 +5,11 @@ import io.github.phantamanta44.pcrossbow.Xbow;
 
 public class XbowItems {
 
+    public static ItemWrench wrench;
+
     public static void init() {
         LibNine.PROXY.getRegistrar().begin(Xbow.INSTANCE);
-        // TODO
+        wrench = new ItemWrench();
         LibNine.PROXY.getRegistrar().end();
     }
 

@@ -3,6 +3,7 @@ package io.github.phantamanta44.pcrossbow.item.block;
 import io.github.phantamanta44.libnine.block.state.VirtualState;
 import io.github.phantamanta44.pcrossbow.block.BlockLaser;
 import io.github.phantamanta44.pcrossbow.block.base.XbowProps;
+import io.github.phantamanta44.pcrossbow.item.base.ItemBlockPowered;
 import io.github.phantamanta44.pcrossbow.tile.TileLaser;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

@@ -6,5 +6,36 @@ tile.pcrossbow:laser2.name=Laser Diode Casing
 tile.pcrossbow:laser3.name=Atomic Laser Casing
 tile.pcrossbow:inductor0.name=Beam Inductor
 tile.pcrossbow:optics0.name=Mirror
+tile.pcrossbow:optics1.name=Beam Splitter
 
-pcrossbow.info.energy=Energy Buffer
+item.pcrossbow:wrench0.name=Optical Wrench
+item.pcrossbow:wrench1.name=Vector Gauge
+
+pcrossbow.info.energy=Energy
+
+pcrossbow.info.cardinal.up_north_west=Up Northwest
+pcrossbow.info.cardinal.up_north=Up North
+pcrossbow.info.cardinal.up_north_east=Up Northeast
+pcrossbow.info.cardinal.up_west=Up West
+pcrossbow.info.cardinal.up=Up
+pcrossbow.info.cardinal.up_east=Up East
+pcrossbow.info.cardinal.up_south_west=Up Southwest
+pcrossbow.info.cardinal.up_south=Up South
+pcrossbow.info.cardinal.up_south_east=Up Southeast
+pcrossbow.info.cardinal.north_west=Northwest
+pcrossbow.info.cardinal.north=North
+pcrossbow.info.cardinal.north_east= Northeast
+pcrossbow.info.cardinal.west=West
+pcrossbow.info.cardinal.east=East
+pcrossbow.info.cardinal.south_west=Southwest
+pcrossbow.info.cardinal.south=South
+pcrossbow.info.cardinal.south_east=Southeast
+pcrossbow.info.cardinal.down_north_west=Down Northwest
+pcrossbow.info.cardinal.down_north=Down North
+pcrossbow.info.cardinal.down_north_east=Down Northeast
+pcrossbow.info.cardinal.down_west=Down West
+pcrossbow.info.cardinal.down=Down
+pcrossbow.info.cardinal.down_east=Down East
+pcrossbow.info.cardinal.down_south_west=Down Southwest
+pcrossbow.info.cardinal.down_south=Down South
+pcrossbow.info.cardinal.down_south_east=Down Southeast

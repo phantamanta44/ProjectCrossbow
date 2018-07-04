@@ -1,27 +1,35 @@
 package io.github.phantamanta44.pcrossbow.client;
 
 import io.github.phantamanta44.libnine.client.event.ClientTickHandler;
-import io.github.phantamanta44.libnine.util.WorldBlockPos;
 import io.github.phantamanta44.libnine.util.function.ITriPredicate;
+import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.pcrossbow.CommonProxy;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.client.fx.ParticleLaser;
+import io.github.phantamanta44.pcrossbow.gui.XbowGuis;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import javax.annotation.Nullable;
 
 public class ClientProxy extends CommonProxy {
 
     @Override
-    public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir,
+    public void onPreInit(FMLPreInitializationEvent event) {
+        super.onPreInit(event);
+        XbowGuis.initClient();
+    }
+
+    @Override
+    public void doLasing0(World world, Vec3d initialPos, Vec3d unnormDir,
                          double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
         if (!world.isRemote) {
-            super.doLasing(world, initialPos, unnormDir, power, initialRadius, fluxAngle, src);
+            super.doLasing0(world, initialPos, unnormDir, power, initialRadius, fluxAngle, src);
             return;
         }
         Vec3d dir = unnormDir.normalize();

@@ -10,9 +10,13 @@ import io.github.phantamanta44.pcrossbow.tile.TileLaser;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public class BlockLaser extends BlockPersistentState {
 
@@ -48,6 +52,23 @@ public class BlockLaser extends BlockPersistentState {
     @Override
     protected L9ItemBlock initItemBlock() {
         return new ItemBlockLaser(this);
+    }
+
+    @Override
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
+        TileLaser tile = getTileEntity(world, pos);
+        if (tile != null) {
+            tile.setDirection(tile.getDirection() == axis.getOpposite() ? axis : axis.getOpposite());
+            world.notifyNeighborsOfStateChange(pos, this, true);
+            return true;
+        }
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public EnumFacing[] getValidRotations(World world, BlockPos pos) {
+        return EnumFacing.VALUES;
     }
 
     @Override

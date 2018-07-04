@@ -1,0 +1,12 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "libnine:noop",
+    "textures": {
+      "particle": "pcrossbow:items/mirror"
+    }
+  },
+  "variants": {
+    "normal": [{}]
+  }
+}

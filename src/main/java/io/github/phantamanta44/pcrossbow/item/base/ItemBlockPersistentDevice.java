@@ -2,7 +2,7 @@ package io.github.phantamanta44.pcrossbow.item.base;
 
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.capability.L9AspectEnergy;
-import io.github.phantamanta44.libnine.capability.provider.CapabilityBroker;
+import io.github.phantamanta44.libnine.capability.provider.CapabilityBrokerLazy;
 import io.github.phantamanta44.libnine.component.IntReservoir;
 import io.github.phantamanta44.libnine.util.helper.FormatUtils;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
@@ -28,10 +28,12 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
-        if (nbt == null) return null;
-        CapabilityBroker provider = new CapabilityBroker()
-                .with(CapabilityEnergy.ENERGY, new L9AspectEnergy(new EnergyReservoir(stack, this)));
-        return provider;
+        return new CapabilityBrokerLazy(c -> {
+            if (c == CapabilityEnergy.ENERGY) {
+                if (stack.hasTagCompound()) return new L9AspectEnergy(new EnergyReservoir(stack, this));
+            }
+            return null;
+        });
     }
 
     @Override
@@ -46,21 +48,31 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
         }
     }
 
-    protected abstract int getMaxEnergy(NBTTagCompound tag);
+    protected abstract int getMaxEnergy(int meta);
 
     private static class EnergyReservoir extends IntReservoir {
 
         private final ItemStack stack;
 
         public EnergyReservoir(ItemStack stack, ItemBlockPersistentDevice item) {
-            super(stack.getTagCompound().getInteger(NBTConst.ENERGY), item.getMaxEnergy(stack.getTagCompound()));
+            super(item.getMaxEnergy(stack.getMetadata()));
             this.stack = stack;
+            deserializeNBT(stack.getTagCompound()
+                    .getCompoundTag(NBTConst.ITEM_BLOCK_STATE)
+                    .getCompoundTag(NBTConst.ENERGY));
+        }
+
+        @Override
+        public int getQuantity() {
+            return super.getQuantity();
         }
 
         @Override
         public void setQuantity(int qty) {
             super.setQuantity(qty);
-            stack.getTagCompound().setInteger(NBTConst.ENERGY, qty);
+            serializeNBT(stack.getTagCompound()
+                    .getCompoundTag(NBTConst.ITEM_BLOCK_STATE)
+                    .getCompoundTag(NBTConst.ENERGY));
         }
 
     }

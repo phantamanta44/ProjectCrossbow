@@ -1,10 +1,12 @@
 package io.github.phantamanta44.pcrossbow;
 
-import io.github.phantamanta44.libnine.util.WorldBlockPos;
 import io.github.phantamanta44.libnine.util.function.ITriPredicate;
+import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
+import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
+import io.github.phantamanta44.pcrossbow.gui.XbowGuis;
 import io.github.phantamanta44.pcrossbow.item.XbowItems;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import net.minecraft.block.Block;
@@ -12,6 +14,9 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
@@ -23,16 +28,21 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import javax.annotation.Nullable;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class CommonProxy {
 
     protected static final double INTENSITY_CUTOFF = 0.1D;
+
+    private static final ThreadLocal<Deque<LasingTask>> lasingQueue = new ThreadLocal<>();
 
     public void onPreInit(FMLPreInitializationEvent event) {
         XbowCaps.init();
         // TODO Load config
         XbowBlocks.init();
         XbowItems.init();
+        XbowGuis.init();
     }
 
     public void onInit(FMLInitializationEvent event) {
@@ -47,6 +57,24 @@ public class CommonProxy {
     @SuppressWarnings("unchecked")
     public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir,
                          double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
+        if (lasingQueue.get() != null) {
+            lasingQueue.get().offer(new LasingTask(world, initialPos, unnormDir, power, initialRadius, fluxAngle, src));
+        } else {
+            Deque<LasingTask> queue = new LinkedList<>();
+            lasingQueue.set(queue);
+            doLasing0(world, initialPos, unnormDir, power, initialRadius, fluxAngle, src);
+            int iterations = 50;
+            while (!queue.isEmpty() && --iterations > 0) queue.pop().doLasing(this);
+            lasingQueue.remove();
+        }
+    }
+
+    public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir, double power, double initialRadius, double fluxAngle) {
+        doLasing(world, initialPos, unnormDir, power, initialRadius, fluxAngle, null);
+    }
+
+    protected void doLasing0(World world, Vec3d initialPos, Vec3d unnormDir,
+                           double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d maxPotentialPos = initialPos.add(dir.scale(range));
@@ -66,9 +94,27 @@ public class CommonProxy {
                 consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else {
                 float hardness = state.getBlockHardness(world, finalBlockPos.getPos());
+                boolean shouldSetFire = true;
                 if (intensity / 25000D >= hardness && hardness >= 0) {
-                    breakBlockNaturally(world, finalBlockPos.getPos());
-                } else if (state.getBlock().isFlammable(world, finalBlockPos.getPos(), trace.sideHit) && intensity >= 6000D) {
+                    ItemStack blockStack = finalBlockPos.getBlockState().getBlock()
+                            .getPickBlock(state, null, world, finalBlockPos.getPos(), null);
+                    ItemStack smeltResult = FurnaceRecipes.instance().getSmeltingResult(blockStack);
+                    if (!smeltResult.isEmpty()) {
+                        if (smeltResult.getItem() instanceof ItemBlock) {
+                            Block smeltResultBlock = ((ItemBlock)smeltResult.getItem()).getBlock();
+                            world.setBlockState(finalBlockPos.getPos(),
+                                    smeltResultBlock.getStateFromMeta(smeltResult.getMetadata()));
+                        } else {
+                            world.setBlockToAir(finalBlockPos.getPos());
+                            WorldUtils.dropItem(finalBlockPos, smeltResult.copy());
+                        }
+                        world.playEvent(2004, finalBlockPos.getPos(), 0);
+                        shouldSetFire = false;
+                    }
+                } else if (intensity < 6000D) {
+                    shouldSetFire = false;
+                }
+                if (shouldSetFire && state.getBlock().isFlammable(world, finalBlockPos.getPos(), trace.sideHit)) {
                     BlockPos adjPos = finalBlockPos.getPos().add(trace.sideHit.getDirectionVec());
                     if (world.isAirBlock(adjPos)) world.setBlockState(adjPos, Blocks.FIRE.getDefaultState());
                 }
@@ -92,9 +138,6 @@ public class CommonProxy {
                         e.attackEntityFrom(DamageSource.IN_FIRE, Double.valueOf(intensity / 5000D).floatValue());
                     }
                 });
-    }
-    public void doLasing(World world, Vec3d initialPos, Vec3d unnormDir, double power, double initialRadius, double fluxAngle) {
-        doLasing(world, initialPos, unnormDir, power, initialRadius, fluxAngle, null);
     }
 
     @Nullable
@@ -124,7 +167,7 @@ public class CommonProxy {
         // project to yz plane
         inter1 = (prism.minY - y1) * dzdy + z1;
         inter2 = (prism.maxY - y1) * dzdy + z1;
-        return Math.min(inter1, inter2) <= prism.maxZ && Math.max(inter1, inter2) >= prism.minZ;
+        return !(Math.min(inter1, inter2) > prism.maxZ && Math.max(inter1, inter2) < prism.minZ);
     }
 
     @Nullable
@@ -236,12 +279,32 @@ public class CommonProxy {
         }
     }
 
-    public void breakBlockNaturally(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
-        state.getBlock().dropBlockAsItem(world, pos, state, 0);
-        state.getBlock().breakBlock(world, pos, state);
-        world.setBlockToAir(pos);
-        world.playEvent(2001, pos, Block.getIdFromBlock(state.getBlock()));
+    private static class LasingTask {
+
+        private final World world;
+        private final Vec3d initialPos;
+        private final Vec3d unnormDir;
+        private final double power;
+        private final double initialRadius;
+        private final double fluxAngle;
+        @Nullable
+        private final WorldBlockPos src;
+
+        LasingTask(World world, Vec3d initialPos, Vec3d unnormDir,
+                   double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
+            this.world = world;
+            this.initialPos = initialPos;
+            this.unnormDir = unnormDir;
+            this.power = power;
+            this.initialRadius = initialRadius;
+            this.fluxAngle = fluxAngle;
+            this.src = src;
+        }
+
+        void doLasing(CommonProxy proxy) {
+            proxy.doLasing0(world, initialPos, unnormDir, power, initialRadius, fluxAngle, src);
+        }
+
     }
 
 }

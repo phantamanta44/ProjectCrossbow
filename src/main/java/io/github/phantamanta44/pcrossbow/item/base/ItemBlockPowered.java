@@ -1,4 +1,4 @@
-package io.github.phantamanta44.pcrossbow.item.block;
+package io.github.phantamanta44.pcrossbow.item.base;
 
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.pcrossbow.item.base.ItemBlockPersistentDevice;
@@ -14,7 +14,7 @@ public class ItemBlockPowered extends ItemBlockPersistentDevice {
     }
 
     @Override
-    protected int getMaxEnergy(NBTTagCompound tag) {
+    protected int getMaxEnergy(int meta) {
         return maxEnergy;
     }
 

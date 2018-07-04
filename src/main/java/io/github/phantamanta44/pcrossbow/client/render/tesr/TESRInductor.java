@@ -1,4 +1,4 @@
-package io.github.phantamanta44.pcrossbow.client.render;
+package io.github.phantamanta44.pcrossbow.client.render.tesr;
 
 import io.github.phantamanta44.pcrossbow.client.model.ModelSpinnyThing;
 import io.github.phantamanta44.pcrossbow.tile.TileInductor;

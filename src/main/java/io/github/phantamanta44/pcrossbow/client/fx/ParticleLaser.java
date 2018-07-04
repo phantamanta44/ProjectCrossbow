@@ -1,6 +1,7 @@
 package io.github.phantamanta44.pcrossbow.client.fx;
 
 import io.github.phantamanta44.libnine.util.math.LinAlUtils;
+import io.github.phantamanta44.libnine.util.math.MathUtils;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
@@ -27,7 +28,7 @@ public class ParticleLaser extends Particle {
         this.particleRed = ((colour & 0xFF0000) >> 16) / 255F;
         this.particleGreen = ((colour & 0x0000FF) >> 8) / 255F;
         this.particleBlue = (colour & 0x0000FF) / 255F;
-        this.particleAlpha = Math.min(Math.max(Double.valueOf(power).floatValue() / 300F, 0.102F), 0.2F);
+        this.particleAlpha = Math.min(Math.max(Double.valueOf(power / 150000D).floatValue(), 0.102F), 0.2F);
         this.particleGravity = 0;
         this.motionX = this.motionY = this.motionZ = 0;
         this.prevPosX = this.posX;
@@ -75,7 +76,7 @@ public class ParticleLaser extends Particle {
                 (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - player.lastTickPosZ - (player.posZ - player.lastTickPosZ) * (double)partialTicks));
         Vec3d ortho = dir.crossProduct(LinAlUtils.Y_POS);
         ortho = ortho.lengthSquared() == 0 ? LinAlUtils.X_POS : ortho.normalize();
-        GlStateManager.rotate((float)Math.acos(LinAlUtils.Y_POS.dotProduct(dir)) * -57.3F,
+        GlStateManager.rotate((float)Math.acos(LinAlUtils.Y_POS.dotProduct(dir)) * -MathUtils.R2D_F,
                 (float)ortho.x, (float)ortho.y, (float)ortho.z);
 
         Tessellator tess = Tessellator.getInstance();
