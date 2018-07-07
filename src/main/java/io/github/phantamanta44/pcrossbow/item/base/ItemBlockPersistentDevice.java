@@ -1,7 +1,7 @@
 package io.github.phantamanta44.pcrossbow.item.base;
 
 import io.github.phantamanta44.libnine.block.L9BlockStated;
-import io.github.phantamanta44.libnine.capability.L9AspectEnergy;
+import io.github.phantamanta44.libnine.capability.impl.L9AspectEnergy;
 import io.github.phantamanta44.libnine.capability.provider.CapabilityBrokerLazy;
 import io.github.phantamanta44.libnine.component.IntReservoir;
 import io.github.phantamanta44.libnine.util.helper.FormatUtils;
@@ -37,14 +37,13 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, world, tooltip, flagIn);
         if (stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
             IEnergyStorage energy = stack.getCapability(CapabilityEnergy.ENERGY, null);
-            tooltip.add(
-                    LangConst.get(TextFormatting.GRAY + LangConst.get(LangConst.INFO_ENERGY_STORED) + ": " +
-                            TextFormatting.AQUA + FormatUtils.formatSI(energy.getEnergyStored(), "FE") + " / " +
-                            FormatUtils.formatSI(energy.getMaxEnergyStored(), "FE")));
+            tooltip.add(TextFormatting.GREEN + LangConst.get(LangConst.INFO_ENERGY_STORED,
+                    TextFormatting.WHITE + FormatUtils.formatSI(energy.getEnergyStored(), LangConst.get(LangConst.UNIT_ENERGY)),
+                    FormatUtils.formatSI(energy.getMaxEnergyStored(), LangConst.get(LangConst.UNIT_ENERGY))));
         }
     }
 
@@ -60,11 +59,6 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
             deserializeNBT(stack.getTagCompound()
                     .getCompoundTag(NBTConst.ITEM_BLOCK_STATE)
                     .getCompoundTag(NBTConst.ENERGY));
-        }
-
-        @Override
-        public int getQuantity() {
-            return super.getQuantity();
         }
 
         @Override

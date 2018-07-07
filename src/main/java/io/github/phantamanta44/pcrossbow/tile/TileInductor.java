@@ -1,6 +1,6 @@
 package io.github.phantamanta44.pcrossbow.tile;
 
-import io.github.phantamanta44.libnine.capability.L9AspectEnergy;
+import io.github.phantamanta44.libnine.capability.impl.L9AspectEnergy;
 import io.github.phantamanta44.libnine.capability.provider.CapabilityBroker;
 import io.github.phantamanta44.libnine.component.IntReservoir;
 import io.github.phantamanta44.libnine.tile.L9TileEntityTicking;
@@ -45,7 +45,7 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
 
     @Override
     public void consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
-        if (!world.isRemote) energy.offer(Math.max((int)Math.floor(power * (2 - Math.pow(Math.E, radius / 0.69315D))), 0), true);
+        if (!world.isRemote) energy.offer(Math.max((int)Math.floor(power * (1 - Math.pow(2 * radius, 3))), 0), true);
     }
 
     @Override

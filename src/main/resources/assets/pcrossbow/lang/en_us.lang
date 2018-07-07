@@ -1,17 +1,52 @@
 itemGroup.pcrossbow=Project Crossbow
 
-tile.pcrossbow:laser0.name=Solid-State Laser Casing
-tile.pcrossbow:laser1.name=Gas Laser Casing
-tile.pcrossbow:laser2.name=Laser Diode Casing
-tile.pcrossbow:laser3.name=Atomic Laser Casing
+tile.pcrossbow:laser0.name=Redstone-Glowstone Laser
+tile.pcrossbow:laser1.name=Flashlamp Laser
+tile.pcrossbow:laser2.name=Halogen Laser
+tile.pcrossbow:laser3.name=Plasma Arc Laser
 tile.pcrossbow:inductor0.name=Beam Inductor
 tile.pcrossbow:optics0.name=Mirror
 tile.pcrossbow:optics1.name=Beam Splitter
 
 item.pcrossbow:wrench0.name=Optical Wrench
 item.pcrossbow:wrench1.name=Vector Gauge
+item.pcrossbow:beam_mod_power0.name=Redstone-Diamond Lasing Medium
+item.pcrossbow:beam_mod_power1.name=Titanium-Sapphire Lasing Medium
+item.pcrossbow:beam_mod_power2.name=Ytterbium Glass Lasing Medium
+item.pcrossbow:beam_mod_power3.name=Neodymium Glass Lasing Medium
+item.pcrossbow:beam_mod_power4.name=Glass Lasing Medium
+item.pcrossbow:beam_mod_radius0.name=Simple Optical Aperture
+item.pcrossbow:beam_mod_radius1.name=Precise Optical Aperture
+item.pcrossbow:beam_mod_radius2.name=Microscopic Optical Aperture
+item.pcrossbow:beam_mod_radius3.name=Nanoscopic Optical Aperture
+item.pcrossbow:beam_mod_radius4.name=Wide Optical Aperture
+item.pcrossbow:beam_mod_flux_angle0.name=Lens
+item.pcrossbow:beam_mod_flux_angle1.name=Precise Lens
+item.pcrossbow:beam_mod_flux_angle2.name=High-Focus Lens
+item.pcrossbow:beam_mod_flux_angle3.name=Ultra-Focus Lens
+item.pcrossbow:beam_mod_flux_angle4.name=Defocusing Lens
 
-pcrossbow.info.energy=Energy
+pcrossbow.info.fraction=%s / %s
+pcrossbow.info.energy=Energy: %s / %s
+pcrossbow.info.power=Power: %s
+pcrossbow.info.radius=Radius: %s
+pcrossbow.info.flux_angle=Flux Angle: %s
+pcrossbow.info.base_power=Base Power: %s
+pcrossbow.info.base_radius=Base Radius: %s
+pcrossbow.info.base_flux_angle=Base Flux Angle: %s
+pcrossbow.info.mod_power=Power Factor: %s
+pcrossbow.info.mod_radius=Radius Factor: %s
+pcrossbow.info.mod_flux_angle=Flux Angle Factor: %s
+pcrossbow.info.redstone_ignored=No Redstone Control
+pcrossbow.info.redstone_direct=Direct Redstone Control
+pcrossbow.info.redstone_inverted=Inverted Redstone Control
+
+pcrossbow.unit.energy=FE
+pcrossbow.unit.time=t
+pcrossbow.unit.power=FE/t
+pcrossbow.unit.distance=m
+pcrossbow.unit.angle=rad
+pcrossbow.unit.intensity=FE/t/m^2
 
 pcrossbow.info.cardinal.up_north_west=Up Northwest
 pcrossbow.info.cardinal.up_north=Up North
@@ -39,3 +74,5 @@ pcrossbow.info.cardinal.down_east=Down East
 pcrossbow.info.cardinal.down_south_west=Down Southwest
 pcrossbow.info.cardinal.down_south=Down South
 pcrossbow.info.cardinal.down_south_east=Down Southeast
+
+death.attack.xbow_laser=%s attenuated too many photons

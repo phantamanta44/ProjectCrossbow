@@ -1,7 +1,9 @@
 package io.github.phantamanta44.pcrossbow.constant;
 
+import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
 import io.github.phantamanta44.libnine.util.render.TextureRegion;
 import io.github.phantamanta44.libnine.util.render.TextureResource;
+import io.github.phantamanta44.libnine.util.world.RedstoneBehaviour;
 import io.github.phantamanta44.pcrossbow.Xbow;
 import io.github.phantamanta44.pcrossbow.util.Cardinal;
 import net.minecraft.util.ResourceLocation;
@@ -44,6 +46,7 @@ public class ResConst {
 
     public static final String GUI_KEY = "textures/gui/";
     public static final ResourceLocation GUI_VECTOR_WRENCH = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "vector_wrench.png");
+    public static final ResourceLocation GUI_LASER = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "laser.png");
 
     /*
      * Component textures
@@ -61,6 +64,29 @@ public class ResConst {
     public static final TextureRegion[] COMP_CARDINAL_DIRS = Arrays.stream(Cardinal.values())
             .map(c -> COMP_CARDINAL.getRegion(0, c.ordinal() * 44 + 44, 35, 44))
             .toArray(TextureRegion[]::new);
+
+    public static final TextureResource COMP_ENERGY = Xbow.INSTANCE.newTextureResource(COMP_KEY + "energy.png", 6, 68);
+    public static final TextureRegion COMP_ENERGY_BG = COMP_ENERGY.getRegion(0, 0, 5, 68);
+    public static final TextureRegion COMP_ENERGY_FG = COMP_ENERGY.getRegion(5, 0, 1, 64);
+
+    public static final TextureResource COMP_REDSTONE = Xbow.INSTANCE.newTextureResource(COMP_KEY + "redstone.png", 35, 7);
+    public static final TextureRegion COMP_REDSTONE_CROSSHAIR = COMP_REDSTONE.getRegion(0, 0, 7, 7);
+    public static final TextureRegion COMP_REDSTONE_BG = COMP_REDSTONE.getRegion(7, 0, 7, 7);
+    public static final TextureRegion COMP_REDSTONE_IGNORED = COMP_REDSTONE.getRegion(14, 0, 7, 7);
+    public static final TextureRegion COMP_REDSTONE_DIRECT = COMP_REDSTONE.getRegion(21, 0, 7, 7);
+    public static final TextureRegion COMP_REDSTONE_INVERTED = COMP_REDSTONE.getRegion(28, 0, 7, 7);
+
+    public static TextureRegion getCompRedstoneIcon(RedstoneBehaviour behaviour) {
+        switch (behaviour) {
+            case IGNORED:
+                return COMP_REDSTONE_IGNORED;
+            case DIRECT:
+                return COMP_REDSTONE_DIRECT;
+            case INVERTED:
+                return COMP_REDSTONE_INVERTED;
+        }
+        throw new ImpossibilityRealizedException();
+    }
 
     /*
      * Colours

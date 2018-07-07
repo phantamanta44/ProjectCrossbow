@@ -6,6 +6,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +36,10 @@ public class EnergyUtils {
             }
         }
         return amount - toDis;
+    }
+
+    public static float getPercentage(IEnergyStorage storage) {
+        return (float)storage.getEnergyStored() / storage.getMaxEnergyStored();
     }
 
 }

@@ -6,7 +6,7 @@ import io.github.phantamanta44.pcrossbow.Xbow;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.block.base.IDismantleable;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
-import io.github.phantamanta44.pcrossbow.gui.XbowGuis;
+import io.github.phantamanta44.pcrossbow.client.gui.XbowGuis;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

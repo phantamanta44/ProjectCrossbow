@@ -1,15 +1,18 @@
 package io.github.phantamanta44.pcrossbow.client.gui;
 
-import io.github.phantamanta44.libnine.client.gui.L9GuiContainer;
-import io.github.phantamanta44.libnine.client.gui.component.GuiComponentTextInput;
+import io.github.phantamanta44.libnine.client.gui.component.impl.GuiComponentTextInput;
+import io.github.phantamanta44.libnine.util.helper.ItemUtils;
 import io.github.phantamanta44.libnine.util.math.LinAlUtils;
 import io.github.phantamanta44.pcrossbow.client.gui.component.GuiComponentCardinal;
+import io.github.phantamanta44.pcrossbow.client.gui.component.GuiComponentInfo;
+import io.github.phantamanta44.pcrossbow.constant.LangConst;
 import io.github.phantamanta44.pcrossbow.constant.ResConst;
-import io.github.phantamanta44.pcrossbow.gui.ContainerVectorWrench;
+import io.github.phantamanta44.pcrossbow.inventory.ContainerVectorWrench;
+import io.github.phantamanta44.pcrossbow.item.XbowItems;
 import io.github.phantamanta44.pcrossbow.util.VecSer;
 import net.minecraft.util.math.Vec3d;
 
-public class GuiVectorWrench extends L9GuiContainer {
+public class GuiVectorWrench extends GuiBase {
 
     public GuiVectorWrench(ContainerVectorWrench cont) {
         super(cont, ResConst.GUI_VECTOR_WRENCH);
@@ -26,11 +29,7 @@ public class GuiVectorWrench extends L9GuiContainer {
             cont.setNorm(d.getVector());
             textInput.setValue(VecSer.serialize(cont.getNorm()));
         }));
-    }
-
-    @Override
-    public void drawForeground(float partialTicks, int mX, int mY) {
-        // NO-OP
+        addComponent(new GuiComponentInfo(LangConst.get(ItemUtils.getLocalizedSubName(XbowItems.wrench, 1)), null));
     }
 
 }

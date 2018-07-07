@@ -6,7 +6,7 @@ import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.pcrossbow.CommonProxy;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.client.fx.ParticleLaser;
-import io.github.phantamanta44.pcrossbow.gui.XbowGuis;
+import io.github.phantamanta44.pcrossbow.client.gui.XbowGuis;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

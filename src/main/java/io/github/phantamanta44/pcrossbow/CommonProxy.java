@@ -1,14 +1,16 @@
 package io.github.phantamanta44.pcrossbow;
 
+import io.github.phantamanta44.libnine.util.data.serialization.IDatum;
 import io.github.phantamanta44.libnine.util.function.ITriPredicate;
 import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
-import io.github.phantamanta44.pcrossbow.gui.XbowGuis;
+import io.github.phantamanta44.pcrossbow.client.gui.XbowGuis;
 import io.github.phantamanta44.pcrossbow.item.XbowItems;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
+import io.github.phantamanta44.pcrossbow.util.XbowDamage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -18,7 +20,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
@@ -83,15 +84,35 @@ public class CommonProxy {
                         PhysicsUtils.calculateRadius(initialRadius, fluxAngle, t.hitVec.distanceTo(initialPos)), fluxAngle, t) != null);
         if (src != null) pred = pred.pre((b, p, t) -> !p.equals(src));
         RayTraceResult trace = traceRay(world, initialPos, maxPotentialPos, pred);
+        Vec3d finalPos = trace != null ? trace.hitVec : maxPotentialPos;
+        IDatum.OfInt count = IDatum.ofInt(0);
+        world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(
+                Math.min(initialPos.x, finalPos.x) - 0.1,
+                Math.min(initialPos.y, finalPos.y) - 0.1,
+                Math.min(initialPos.z, finalPos.z) - 0.1,
+                Math.max(initialPos.x, finalPos.x) + 0.1,
+                Math.max(initialPos.y, finalPos.y) + 0.1,
+                Math.max(initialPos.z, finalPos.z) + 0.1
+        )).stream()
+                .filter(e -> intersectsLine(e.getEntityBoundingBox(), initialPos, finalPos))
+                .forEach(e -> {
+                    double intensity = PhysicsUtils.calculateIntensity(power / Math.pow(8D, count.postincrement()),
+                            initialRadius, fluxAngle, e.getDistance(initialPos.x, initialPos.y, initialPos.z));
+                    if (intensity >= 10000) {
+                        e.setFire((int)Math.floor(intensity / 500D));
+                        e.attackEntityFrom(XbowDamage.SRC_LASER, Double.valueOf(intensity / 10000D).floatValue());
+                    }
+                });
+        double attenuatedPower = power / Math.pow(8D, count.get());
         if (trace != null) {
             WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
             double distTravelled = trace.hitVec.distanceTo(initialPos);
-            double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled);
+            double intensity = PhysicsUtils.calculateIntensity(attenuatedPower, initialRadius, fluxAngle, distTravelled);
             double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
             IBlockState state = finalBlockPos.getBlockState();
-            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
+            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, attenuatedPower, radius, fluxAngle, trace);
             if (consumer != null) {
-                consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
+                consumer.consumeBeam(trace.hitVec, dir, attenuatedPower, radius, fluxAngle);
             } else {
                 float hardness = state.getBlockHardness(world, finalBlockPos.getPos());
                 boolean shouldSetFire = true;
@@ -120,24 +141,6 @@ public class CommonProxy {
                 }
             }
         }
-        Vec3d finalPos = trace != null ? trace.hitVec : maxPotentialPos;
-        world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(
-                Math.min(initialPos.x, finalPos.x) - 0.1,
-                Math.min(initialPos.y, finalPos.y) - 0.1,
-                Math.min(initialPos.z, finalPos.z) - 0.1,
-                Math.max(initialPos.x, finalPos.x) + 0.1,
-                Math.max(initialPos.y, finalPos.y) + 0.1,
-                Math.max(initialPos.z, finalPos.z) + 0.1
-        )).stream()
-                .filter(e -> intersectsLine(e.getEntityBoundingBox(), initialPos, finalPos))
-                .forEach(e -> {
-                    double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle,
-                            e.getDistance(initialPos.x, initialPos.y, initialPos.z));
-                    if (intensity >= 5000) {
-                        e.setFire((int)Math.floor(intensity / 250D));
-                        e.attackEntityFrom(DamageSource.IN_FIRE, Double.valueOf(intensity / 5000D).floatValue());
-                    }
-                });
     }
 
     @Nullable

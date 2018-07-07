@@ -1,10 +1,11 @@
-package io.github.phantamanta44.pcrossbow.gui;
+package io.github.phantamanta44.pcrossbow.inventory;
 
 import io.github.phantamanta44.libnine.gui.L9Container;
 import io.github.phantamanta44.libnine.util.data.ByteUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.IVectorDirectional;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -35,7 +36,6 @@ public class ContainerVectorWrench extends L9Container implements IVectorDirecti
     @Override
     public void onClientInteraction(ByteUtils.Reader data) {
         Vec3d v = data.readVec3d().normalize();
-        System.out.println(v);
         target.setNorm(v.normalize());
     }
 

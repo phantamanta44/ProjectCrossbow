@@ -5,6 +5,7 @@ import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.block.state.IBlockModelMapper;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
 import io.github.phantamanta44.libnine.util.Accrue;
+import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
 import io.github.phantamanta44.pcrossbow.block.base.IDismantleable;
 import io.github.phantamanta44.pcrossbow.block.base.XbowProps;
 import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRMirror;
@@ -63,7 +64,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
     public EnumBlockRenderType getRenderType(IBlockState state) {
         Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
         if (type.isRotatingOptics()) return EnumBlockRenderType.INVISIBLE;
-        throw new IllegalStateException("Invalid optics blockstate!");
+        throw new ImpossibilityRealizedException();
     }
 
     @Override
