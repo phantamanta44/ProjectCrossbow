@@ -46,8 +46,9 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
     @Override
     public void consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
         if (!world.isRemote) {
+            boolean redstoneChanged = energy.getQuantity() == 0;
             energy.offer(Math.max((int)Math.floor(power * (1 - Math.pow(2 * radius, 3))), 0), true);
-            world.notifyNeighborsOfStateChange(this.pos, blockType, false);
+            if (redstoneChanged) world.notifyNeighborsOfStateChange(this.pos, blockType, false);
         }
     }
 
