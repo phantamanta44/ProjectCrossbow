@@ -1,6 +1,6 @@
 package io.github.phantamanta44.pcrossbow.item.block;
 
-import io.github.phantamanta44.libnine.block.state.VirtualState;
+import io.github.phantamanta44.libnine.client.model.ParameterizedItemModel;
 import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
 import io.github.phantamanta44.libnine.util.helper.FormatUtils;
 import io.github.phantamanta44.pcrossbow.block.BlockLaser;
@@ -21,15 +21,15 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemBlockLaser extends ItemBlockPersistentDevice {
+public class ItemBlockLaser extends ItemBlockPersistentDevice implements ParameterizedItemModel.IParamaterized {
     
     public ItemBlockLaser(BlockLaser block) {
         super(block);
     }
 
     @Override
-    public String getModelName(VirtualState state) {
-        return state.get(XbowProps.LASER_TYPE).getItemModel();
+    public void getModelMutations(ItemStack stack, ParameterizedItemModel.Mutation m) {
+        m.mutate("type", getBlock().getStates().get(stack.getMetadata()).get(XbowProps.LASER_TYPE).getMutationValue());
     }
 
     @Override

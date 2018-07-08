@@ -113,8 +113,8 @@ public class BlockLaser extends BlockPersistentState {
             return baseFluxAngle;
         }
 
-        public String getItemModel() {
-            return "laser_" + serializableName;
+        public String getMutationValue() {
+            return serializableName;
         }
 
         @Override

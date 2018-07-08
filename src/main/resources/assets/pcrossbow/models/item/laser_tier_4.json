@@ -1,8 +1,0 @@
-{
-  "parent": "pcrossbow:block/laser",
-  "textures": {
-    "front": "pcrossbow:blocks/laser_tier_4_front",
-    "side": "pcrossbow:blocks/laser_tier_4_side",
-    "back": "pcrossbow:blocks/laser_tier_4_back"
-  }
-}

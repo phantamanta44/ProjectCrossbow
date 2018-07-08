@@ -8,7 +8,9 @@
     }
   },
   "textures": {
-    "particle": "#side"
+    "particle": "pcrossbow:blocks/laser/laser_back",
+    "side": "pcrossbow:blocks/laser/laser_side",
+    "back": "pcrossbow:blocks/laser/laser_back"
   },
   "elements": [{
     "from": [ 0, 0, 0 ],

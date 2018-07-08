@@ -1,0 +1,35 @@
+{
+  "9s": "pi",
+  "archetype": {
+    "parent": "item/generated"
+  },
+  "mutations": {
+    "tier": {
+      "tier_1": {
+        "textures": {
+          "layer0": "pcrossbow:items/beam_mod/beam_mod_power_tier_1"
+        }
+      },
+      "tier_2": {
+        "textures": {
+          "layer0": "pcrossbow:items/beam_mod/beam_mod_power_tier_2"
+        }
+      },
+      "tier_3": {
+        "textures": {
+          "layer0": "pcrossbow:items/beam_mod/beam_mod_power_tier_3"
+        }
+      },
+      "tier_4": {
+        "textures": {
+          "layer0": "pcrossbow:items/beam_mod/beam_mod_power_tier_4"
+        }
+      },
+      "tier_0": {
+        "textures": {
+          "layer0": "pcrossbow:items/beam_mod/beam_mod_power_tier_0"
+        }
+      }
+    }
+  }
+}

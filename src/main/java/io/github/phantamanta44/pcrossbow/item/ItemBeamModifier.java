@@ -1,6 +1,7 @@
 package io.github.phantamanta44.pcrossbow.item;
 
 import io.github.phantamanta44.libnine.capability.provider.CapabilityBroker;
+import io.github.phantamanta44.libnine.client.model.ParameterizedItemModel;
 import io.github.phantamanta44.libnine.item.L9ItemSubs;
 import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
 import io.github.phantamanta44.libnine.util.helper.FormatUtils;
@@ -19,13 +20,23 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.DoubleFunction;
 
-public class ItemBeamModifier extends L9ItemSubs {
+public class ItemBeamModifier extends L9ItemSubs implements ParameterizedItemModel.IParamaterized {
 
     private final Type type;
 
     public ItemBeamModifier(String name, Type type) {
         super(name, Tier.values().length);
         this.type = type;
+    }
+
+    @Override
+    protected String getModelName(int variant) {
+        return "beam_mod/" + getInternalName();
+    }
+
+    @Override
+    public void getModelMutations(ItemStack stack, ParameterizedItemModel.Mutation m) {
+        m.mutate("tier", Tier.values()[stack.getMetadata()].getMutationValue());
     }
 
     @Nullable
@@ -95,7 +106,11 @@ public class ItemBeamModifier extends L9ItemSubs {
 
     public enum Tier {
 
-        TIER_1, TIER_2, TIER_3, TIER_4, TIER_0
+        TIER_1, TIER_2, TIER_3, TIER_4, TIER_0;
+
+        public String getMutationValue() {
+            return name().toLowerCase();
+        }
 
     }
 
