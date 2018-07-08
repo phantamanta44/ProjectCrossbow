@@ -6,7 +6,6 @@ import io.github.phantamanta44.libnine.util.world.IRedstoneControllable;
 import io.github.phantamanta44.libnine.util.world.RedstoneBehaviour;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
 import io.github.phantamanta44.pcrossbow.constant.ResConst;
-import net.minecraft.client.renderer.GlStateManager;
 
 public class GuiComponentRedstone extends GuiComponent {
 

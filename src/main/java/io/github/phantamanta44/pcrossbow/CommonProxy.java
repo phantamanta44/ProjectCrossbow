@@ -74,8 +74,9 @@ public class CommonProxy {
         doLasing(world, initialPos, unnormDir, power, initialRadius, fluxAngle, null);
     }
 
+    @SuppressWarnings("deprecation")
     protected void doLasing0(World world, Vec3d initialPos, Vec3d unnormDir,
-                           double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
+                             double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d maxPotentialPos = initialPos.add(dir.scale(range));

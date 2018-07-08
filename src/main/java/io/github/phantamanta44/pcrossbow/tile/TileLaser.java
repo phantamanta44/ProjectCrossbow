@@ -228,7 +228,7 @@ public abstract class TileLaser extends L9TileEntityTicking implements IRedstone
 
         private final TileLaser tile;
 
-        public LaserInv(TileLaser tile) {
+        LaserInv(TileLaser tile) {
             super(3);
             this.tile = tile;
             withPredicate(0, s -> s.hasCapability(XbowCaps.LASER_MOD_POWER, null));

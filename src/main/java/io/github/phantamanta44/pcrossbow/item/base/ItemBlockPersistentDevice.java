@@ -53,7 +53,7 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
 
         private final ItemStack stack;
 
-        public EnergyReservoir(ItemStack stack, ItemBlockPersistentDevice item) {
+        EnergyReservoir(ItemStack stack, ItemBlockPersistentDevice item) {
             super(item.getMaxEnergy(stack.getMetadata()));
             this.stack = stack;
             deserializeNBT(stack.getTagCompound()

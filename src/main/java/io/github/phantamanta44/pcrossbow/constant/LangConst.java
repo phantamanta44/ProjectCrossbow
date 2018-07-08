@@ -17,7 +17,7 @@ public class LangConst {
     public static final String GUI_VECTOR_WRENCH = "vector_wrench";
     public static final String GUI_LASER = "laser";
 
-    public static final String INFO_KEY = XbowConst.MOD_ID + ".info.";
+    private static final String INFO_KEY = XbowConst.MOD_ID + ".info.";
     public static final String INFO_FRACTION = INFO_KEY + "fraction";
     public static final String INFO_ENERGY_STORED = INFO_KEY + "energy";
 
@@ -37,13 +37,13 @@ public class LangConst {
     public static final String INFO_REDSTONE_DIRECT = INFO_KEY + "redstone_direct";
     public static final String INFO_REDSTONE_INVERTED = INFO_KEY + "redstone_inverted";
 
-    public static final String INFO_CARDINAL_KEY = INFO_KEY + "cardinal.";
+    private static final String INFO_CARDINAL_KEY = INFO_KEY + "cardinal.";
 
     public static String getCardinalName(Cardinal dir) {
         return INFO_CARDINAL_KEY + dir.name().toLowerCase();
     }
 
-    public static final String UNIT_KEY = XbowConst.MOD_ID + ".unit.";
+    private static final String UNIT_KEY = XbowConst.MOD_ID + ".unit.";
     public static final String UNIT_ENERGY = UNIT_KEY + "energy";
     public static final String UNIT_TIME = UNIT_KEY + "time";
     public static final String UNIT_POWER= UNIT_KEY + "power";
@@ -55,6 +55,7 @@ public class LangConst {
         return String.format(get(key), args);
     }
 
+    @SuppressWarnings("deprecation")
     public static String get(String key) {
         return I18n.translateToLocal(key);
     }

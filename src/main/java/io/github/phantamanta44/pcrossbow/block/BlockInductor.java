@@ -27,6 +27,7 @@ public class BlockInductor extends L9BlockStated {
         LibNine.PROXY.getRegistrar().queueTESRReg(TileInductor.class, new TESRInductor());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
@@ -37,11 +38,13 @@ public class BlockInductor extends L9BlockStated {
         return layer == BlockRenderLayer.SOLID || layer == BlockRenderLayer.TRANSLUCENT;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean canProvidePower(IBlockState state) {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
         TileInductor tile = getTileEntity(world, pos);

@@ -20,7 +20,6 @@ public class LaserSound implements ITickableSound {
     private final int initialTtl;
     private int ttl;
     private int vol;
-    private SoundEventAccessor soundEvent;
     private Sound sound;
 
     public LaserSound(ResourceLocation resource, float volume, float pitch, float x, float y, float z,
@@ -65,7 +64,7 @@ public class LaserSound implements ITickableSound {
     @Nullable
     @Override
     public SoundEventAccessor createAccessor(SoundHandler handler) {
-        soundEvent = handler.getAccessor(resource);
+        SoundEventAccessor soundEvent = handler.getAccessor(resource);
         sound = soundEvent != null ? soundEvent.cloneEntry() : SoundHandler.MISSING_SOUND;
         return soundEvent;
     }

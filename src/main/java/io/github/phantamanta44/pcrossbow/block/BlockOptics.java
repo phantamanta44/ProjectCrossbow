@@ -60,6 +60,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
         LibNine.PROXY.getRegistrar().queueTESRReg(TileSplitter.class, new TESRSplitter());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
@@ -87,6 +88,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
         dropBlockAsItem(world, pos, state, 0);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
@@ -96,6 +98,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
         return FULL_BLOCK_AABB;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;

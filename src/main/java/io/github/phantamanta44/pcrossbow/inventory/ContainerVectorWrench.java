@@ -5,7 +5,6 @@ import io.github.phantamanta44.libnine.util.data.ByteUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.IVectorDirectional;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;

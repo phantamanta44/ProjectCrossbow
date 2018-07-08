@@ -43,14 +43,4 @@ public class ItemBlockPersistentState extends L9ItemBlockStated {
                 ? null : tag.getCompoundTag(NBTConst.ITEM_BLOCK_STATE);
     }
 
-    public NBTTagCompound getOrCreateStoredBlockState(ItemStack stack) {
-        NBTTagCompound tag = stack.getTagCompound();
-        if (tag == null) stack.setTagCompound(tag = new NBTTagCompound());
-        if (tag.hasKey(NBTConst.ITEM_BLOCK_STATE)) return tag.getCompoundTag(NBTConst.ITEM_BLOCK_STATE);
-        NBTTagCompound state = new NBTTagCompound();
-        getBlock().createNewTileEntity(null, stack.getMetadata()).writeToNBT(state);
-        tag.setTag(NBTConst.ITEM_BLOCK_STATE, state);
-        return state;
-    }
-
 }

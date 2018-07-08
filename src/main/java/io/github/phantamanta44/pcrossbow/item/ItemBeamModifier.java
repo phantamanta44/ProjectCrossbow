@@ -90,7 +90,7 @@ public class ItemBeamModifier extends L9ItemSubs implements ParameterizedItemMod
         }
 
         @SuppressWarnings("unchecked")
-        public ICapabilityProvider getCapabilities(Tier tier) {
+        ICapabilityProvider getCapabilities(Tier tier) {
             return new CapabilityBroker().with(cap, factory.apply(getMultiplier(tier)));
         }
 

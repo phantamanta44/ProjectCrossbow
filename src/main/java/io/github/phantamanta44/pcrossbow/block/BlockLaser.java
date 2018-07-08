@@ -74,6 +74,7 @@ public class BlockLaser extends BlockPersistentState {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileLaser tile = getTileEntity(world, pos);
@@ -122,7 +123,7 @@ public class BlockLaser extends BlockPersistentState {
             return serializableName;
         }
 
-        public TileLaser createTileEntity() {
+        TileLaser createTileEntity() {
             return tileFactory.get();
         }
 

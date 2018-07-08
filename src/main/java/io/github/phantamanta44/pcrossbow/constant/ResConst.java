@@ -33,9 +33,9 @@ public class ResConst {
      * Model textures
      */
 
-    public static final String MODEL_KEY = "textures/model/";
+    private static final String MODEL_KEY = "textures/model/";
 
-    public static final String MODEL_BLOCK_KEY = MODEL_KEY + "block/";
+    private static final String MODEL_BLOCK_KEY = MODEL_KEY + "block/";
     public static final ResourceLocation MODEL_INDUCTOR = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "inductor.png");
     public static final ResourceLocation MODEL_MIRROR = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "mirror.png");
     public static final ResourceLocation MODEL_SPLITTER = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "splitter.png");
@@ -44,7 +44,7 @@ public class ResConst {
      * GUI textures
      */
 
-    public static final String GUI_KEY = "textures/gui/";
+    private static final String GUI_KEY = "textures/gui/";
     public static final ResourceLocation GUI_VECTOR_WRENCH = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "vector_wrench.png");
     public static final ResourceLocation GUI_LASER = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "laser.png");
 
@@ -52,7 +52,7 @@ public class ResConst {
      * Component textures
      */
 
-    public static final String COMP_KEY = "textures/gui/component/";
+    private static final String COMP_KEY = "textures/gui/component/";
 
     public static final TextureResource COMP_SUBMIT = Xbow.INSTANCE.newTextureResource(COMP_KEY + "submit.png", 39, 13);
     public static final TextureRegion COMP_SUBMIT_ACTIVE = COMP_SUBMIT.getRegion(0, 0, 13, 13);
