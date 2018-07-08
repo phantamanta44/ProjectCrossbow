@@ -7,6 +7,7 @@ import io.github.phantamanta44.libnine.item.L9ItemBlock;
 import io.github.phantamanta44.libnine.util.Accrue;
 import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
 import io.github.phantamanta44.pcrossbow.block.base.IDismantleable;
+import io.github.phantamanta44.pcrossbow.block.base.ILaserOpaque;
 import io.github.phantamanta44.pcrossbow.block.base.XbowProps;
 import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRMirror;
 import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRSplitter;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
-public class BlockOptics extends L9BlockStated implements IDismantleable {
+public class BlockOptics extends L9BlockStated implements IDismantleable, ILaserOpaque {
 
     private static final AxisAlignedBB BB_ROTATING_OPTICS = new AxisAlignedBB(0.125D, 0.125D, 0.125D, 0.875D, 0.875D, 0.875D);
 

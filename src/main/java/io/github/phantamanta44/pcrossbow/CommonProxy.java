@@ -1,12 +1,12 @@
 package io.github.phantamanta44.pcrossbow;
 
-import io.github.phantamanta44.libnine.util.data.serialization.IDatum;
 import io.github.phantamanta44.libnine.util.function.ITriPredicate;
 import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
+import io.github.phantamanta44.pcrossbow.block.base.ILaserOpaque;
 import io.github.phantamanta44.pcrossbow.client.gui.XbowGuis;
 import io.github.phantamanta44.pcrossbow.item.XbowItems;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
@@ -80,13 +80,11 @@ public class CommonProxy {
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d maxPotentialPos = initialPos.add(dir.scale(range));
-        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred = (b, p, t) ->
-                b.isOpaqueCube() || (t != null && getLaserConsumer(p, dir, power,
-                        PhysicsUtils.calculateRadius(initialRadius, fluxAngle, t.hitVec.distanceTo(initialPos)), fluxAngle, t) != null);
+        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred
+                = (s, p, t) -> isLaserOpaque(s, p, t, initialPos, dir, power, initialRadius, fluxAngle);
         if (src != null) pred = pred.pre((b, p, t) -> !p.equals(src));
         RayTraceResult trace = traceRay(world, initialPos, maxPotentialPos, pred);
         Vec3d finalPos = trace != null ? trace.hitVec : maxPotentialPos;
-        IDatum.OfInt count = IDatum.ofInt(0);
         world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(
                 Math.min(initialPos.x, finalPos.x) - 0.1,
                 Math.min(initialPos.y, finalPos.y) - 0.1,
@@ -97,23 +95,22 @@ public class CommonProxy {
         )).stream()
                 .filter(e -> intersectsLine(e.getEntityBoundingBox(), initialPos, finalPos))
                 .forEach(e -> {
-                    double intensity = PhysicsUtils.calculateIntensity(power / Math.pow(8D, count.postincrement()),
-                            initialRadius, fluxAngle, e.getDistance(initialPos.x, initialPos.y, initialPos.z));
+                    double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle,
+                            e.getDistance(initialPos.x, initialPos.y, initialPos.z));
                     if (intensity >= 10000) {
                         e.setFire((int)Math.floor(intensity / 500D));
                         e.attackEntityFrom(XbowDamage.SRC_LASER, Double.valueOf(intensity / 10000D).floatValue());
                     }
                 });
-        double attenuatedPower = power / Math.pow(8D, count.get());
         if (trace != null) {
             WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
             double distTravelled = trace.hitVec.distanceTo(initialPos);
-            double intensity = PhysicsUtils.calculateIntensity(attenuatedPower, initialRadius, fluxAngle, distTravelled);
+            double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled);
             double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
             IBlockState state = finalBlockPos.getBlockState();
-            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, attenuatedPower, radius, fluxAngle, trace);
-            if (consumer != null) {
-                consumer.consumeBeam(trace.hitVec, dir, attenuatedPower, radius, fluxAngle);
+            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
+            if (consumer != null && consumer.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle)) {
+                consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else {
                 float hardness = state.getBlockHardness(world, finalBlockPos.getPos());
                 boolean shouldSetFire = true;
@@ -142,6 +139,15 @@ public class CommonProxy {
                 }
             }
         }
+    }
+
+    protected boolean isLaserOpaque(IBlockState state, WorldBlockPos pos, @Nullable RayTraceResult trace,
+                                    Vec3d initialPos, Vec3d dir, double power, double initialRadius, double fluxAngle) {
+        double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, trace.hitVec.distanceTo(initialPos));
+        return state.isOpaqueCube()
+                || (trace != null && getLaserConsumer(pos, dir, power, radius, fluxAngle, trace) != null)
+                || (state.getBlock() instanceof ILaserOpaque && ((ILaserOpaque)state.getBlock())
+                        .isOpaqueToLaser(trace.hitVec, dir, power, radius, fluxAngle));
     }
 
     @Nullable

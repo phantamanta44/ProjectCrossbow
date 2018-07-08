@@ -35,9 +35,8 @@ public class ClientProxy extends CommonProxy {
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d finalPos = initialPos.add(dir.scale(range));
-        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred = (b, p, t) ->
-                b.isOpaqueCube() || (t != null && getLaserConsumer(p, dir, power,
-                        PhysicsUtils.calculateRadius(initialRadius, fluxAngle, t.hitVec.distanceTo(initialPos)), fluxAngle, t) != null);
+        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred
+                = (s, p, t) -> isLaserOpaque(s, p, t, initialPos, dir, power, initialRadius, fluxAngle);
         if (src != null) pred = pred.pre((b, p, t) -> !p.equals(src));
         RayTraceResult trace = traceRay(world, initialPos, finalPos, pred);
         if (trace != null) {
@@ -46,7 +45,7 @@ public class ClientProxy extends CommonProxy {
             double distTravelled = trace.hitVec.distanceTo(initialPos);
             double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
             ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
-            if (consumer != null) {
+            if (consumer != null && consumer.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle)) {
                 consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else if (ClientTickHandler.getTick() % 3 == 0
                         && PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled) >= 6000D) {
