@@ -3,7 +3,7 @@ package io.github.phantamanta44.pcrossbow.item.base;
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.capability.impl.L9AspectEnergy;
 import io.github.phantamanta44.libnine.capability.provider.CapabilityBrokerLazy;
-import io.github.phantamanta44.libnine.component.IntReservoir;
+import io.github.phantamanta44.libnine.component.reservoir.SimpleIntReservoir;
 import io.github.phantamanta44.libnine.util.helper.FormatUtils;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
 import io.github.phantamanta44.pcrossbow.constant.NBTConst;
@@ -49,7 +49,7 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
 
     protected abstract int getMaxEnergy(int meta);
 
-    private static class EnergyReservoir extends IntReservoir {
+    private static class EnergyReservoir extends SimpleIntReservoir {
 
         private final ItemStack stack;
 

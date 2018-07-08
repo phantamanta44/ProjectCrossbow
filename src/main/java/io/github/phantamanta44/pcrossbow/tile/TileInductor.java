@@ -2,7 +2,9 @@ package io.github.phantamanta44.pcrossbow.tile;
 
 import io.github.phantamanta44.libnine.capability.impl.L9AspectEnergy;
 import io.github.phantamanta44.libnine.capability.provider.CapabilityBroker;
-import io.github.phantamanta44.libnine.component.IntReservoir;
+import io.github.phantamanta44.libnine.component.reservoir.IIntReservoir;
+import io.github.phantamanta44.libnine.component.reservoir.RatedIntReservoir;
+import io.github.phantamanta44.libnine.component.reservoir.SimpleIntReservoir;
 import io.github.phantamanta44.libnine.tile.L9TileEntityTicking;
 import io.github.phantamanta44.libnine.tile.RegisterTile;
 import io.github.phantamanta44.libnine.util.data.serialization.AutoSerialize;
@@ -18,10 +20,10 @@ import net.minecraftforge.energy.CapabilityEnergy;
 public class TileInductor extends L9TileEntityTicking implements ILaserConsumer {
 
     @AutoSerialize
-    private final IntReservoir energy;
+    private final IIntReservoir energy;
 
     public TileInductor() {
-        this.energy = new IntReservoir(Integer.MAX_VALUE);
+        this.energy = new SimpleIntReservoir(Integer.MAX_VALUE);
         energy.onQuantityChange((o, n) -> setDirty());
         markRequiresSync();
         setInitialized();
@@ -30,7 +32,7 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
     @Override
     protected ICapabilityProvider initCapabilities() {
         return new CapabilityBroker()
-                .with(CapabilityEnergy.ENERGY, new L9AspectEnergy(energy))
+                .with(CapabilityEnergy.ENERGY, new L9AspectEnergy(new RatedIntReservoir(energy, 0, -1)))
                 .with(XbowCaps.LASER_CONSUMER, this);
     }
 

@@ -4,7 +4,9 @@ import io.github.phantamanta44.libnine.capability.impl.L9AspectEnergy;
 import io.github.phantamanta44.libnine.capability.impl.L9AspectInventory;
 import io.github.phantamanta44.libnine.capability.provider.CapabilityBroker;
 import io.github.phantamanta44.libnine.client.sound.SingleSound;
-import io.github.phantamanta44.libnine.component.IntReservoir;
+import io.github.phantamanta44.libnine.component.reservoir.IIntReservoir;
+import io.github.phantamanta44.libnine.component.reservoir.RatedIntReservoir;
+import io.github.phantamanta44.libnine.component.reservoir.SimpleIntReservoir;
 import io.github.phantamanta44.libnine.tile.L9TileEntityTicking;
 import io.github.phantamanta44.libnine.tile.RegisterTile;
 import io.github.phantamanta44.libnine.util.data.ByteUtils;
@@ -35,7 +37,7 @@ public abstract class TileLaser extends L9TileEntityTicking implements IRedstone
     private final BlockLaser.Type type;
 
     @AutoSerialize
-    private final IntReservoir energy;
+    private final IIntReservoir energy;
     @AutoSerialize
     private final LaserInv inventory;
     @AutoSerialize
@@ -57,7 +59,7 @@ public abstract class TileLaser extends L9TileEntityTicking implements IRedstone
 
     public TileLaser(BlockLaser.Type type) {
         this.type = type;
-        this.energy = new IntReservoir((int)Math.ceil(type.getBasePower() * 20));
+        this.energy = new SimpleIntReservoir((int)Math.ceil(type.getBasePower() * 20));
         this.inventory = new LaserInv(this);
         this.rotation = IDatum.of(EnumFacing.NORTH);
         this.redstone = IDatum.of(RedstoneBehaviour.DIRECT);
@@ -77,7 +79,7 @@ public abstract class TileLaser extends L9TileEntityTicking implements IRedstone
     @Override
     protected ICapabilityProvider initCapabilities() {
         return new CapabilityBroker()
-                .with(CapabilityEnergy.ENERGY, new L9AspectEnergy(energy))
+                .with(CapabilityEnergy.ENERGY, new L9AspectEnergy(new RatedIntReservoir(energy, -1, 0)))
                 .with(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventory);
     }
 
