@@ -4,6 +4,7 @@ import io.github.phantamanta44.pcrossbow.client.model.ModelSpinnyThing;
 import io.github.phantamanta44.pcrossbow.tile.TileInductor;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 public class TESRInductor extends TileEntitySpecialRenderer<TileInductor> {
@@ -24,8 +25,9 @@ public class TESRInductor extends TileEntitySpecialRenderer<TileInductor> {
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
             GlStateManager.translate(x + 0.5D, y + 0.5D, z + 0.5D);
-            GlStateManager.color(1F, 0F, 0F, Math.min(te.getEnergyStored() / 2400F, 1F));
-            core.render((getWorld().getTotalWorldTime() + partialTicks) / 4F);
+            float colourIntensity = MathHelper.sqrt(Math.min(te.getEnergyStored() / 10000F, 1F));
+            GlStateManager.color(colourIntensity, 0F, 0F, colourIntensity);
+            core.render((getWorld().getTotalWorldTime() + partialTicks) * Math.min(te.getEnergyStored(), 200000) / 400000F);
             GlStateManager.popMatrix();
             GlStateManager.enableTexture2D();
             GlStateManager.enableLighting();
