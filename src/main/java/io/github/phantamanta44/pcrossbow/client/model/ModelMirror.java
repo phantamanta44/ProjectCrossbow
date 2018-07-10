@@ -3,7 +3,7 @@ package io.github.phantamanta44.pcrossbow.client.model;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 
-public class ModelMirror extends ModelBase {
+public class ModelMirror extends ModelBase implements IModelMirror {
 
     private final ModelRenderer body;
 
@@ -12,6 +12,7 @@ public class ModelMirror extends ModelBase {
         body.addBox(-7F, -2F, -7F, 14, 4, 14, 0F);
     }
 
+    @Override
     public void render() {
         body.render(0.0625F);
     }

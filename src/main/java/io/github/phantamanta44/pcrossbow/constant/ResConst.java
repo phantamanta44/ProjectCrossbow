@@ -39,6 +39,7 @@ public class ResConst {
     public static final ResourceLocation MODEL_INDUCTOR = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "inductor.png");
     public static final ResourceLocation MODEL_MIRROR = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "mirror.png");
     public static final ResourceLocation MODEL_SPLITTER = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "splitter.png");
+    public static final ResourceLocation MODEL_ONE_WAY = Xbow.INSTANCE.newResourceLocation(MODEL_BLOCK_KEY + "one_way.png");
 
     /*
      * GUI textures

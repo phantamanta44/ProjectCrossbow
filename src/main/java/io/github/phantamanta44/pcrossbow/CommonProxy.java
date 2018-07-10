@@ -143,11 +143,12 @@ public class CommonProxy {
 
     protected boolean isLaserOpaque(IBlockState state, WorldBlockPos pos, @Nullable RayTraceResult trace,
                                     Vec3d initialPos, Vec3d dir, double power, double initialRadius, double fluxAngle) {
+        if (trace == null) return false;
         double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, trace.hitVec.distanceTo(initialPos));
         return state.isOpaqueCube()
-                || (trace != null && getLaserConsumer(pos, dir, power, radius, fluxAngle, trace) != null)
+                || (getLaserConsumer(pos, dir, power, radius, fluxAngle, trace) != null)
                 || (state.getBlock() instanceof ILaserOpaque && ((ILaserOpaque)state.getBlock())
-                        .isOpaqueToLaser(trace.hitVec, dir, power, radius, fluxAngle));
+                        .isOpaqueToLaser(pos, trace.hitVec, dir, power, radius, fluxAngle));
     }
 
     @Nullable

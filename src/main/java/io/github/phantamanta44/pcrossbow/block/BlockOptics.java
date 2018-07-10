@@ -6,14 +6,16 @@ import io.github.phantamanta44.libnine.block.state.IBlockModelMapper;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
 import io.github.phantamanta44.libnine.util.Accrue;
 import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
+import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.pcrossbow.block.base.IDismantleable;
 import io.github.phantamanta44.pcrossbow.block.base.ILaserOpaque;
 import io.github.phantamanta44.pcrossbow.block.base.XbowProps;
-import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRMirror;
-import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRSplitter;
+import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRFreeRotating;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
+import io.github.phantamanta44.pcrossbow.constant.ResConst;
 import io.github.phantamanta44.pcrossbow.item.block.ItemBlockOptics;
 import io.github.phantamanta44.pcrossbow.tile.TileMirror;
+import io.github.phantamanta44.pcrossbow.tile.TileOneWay;
 import io.github.phantamanta44.pcrossbow.tile.TileSplitter;
 import io.github.phantamanta44.pcrossbow.tile.base.TileFreeRotatingOptics;
 import net.minecraft.block.SoundType;
@@ -25,6 +27,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -59,8 +62,9 @@ public class BlockOptics extends L9BlockStated implements IDismantleable, ILaser
         super.initModel();
         LibNine.PROXY.getRegistrar().queueBlockStateMapperReg(this,
                 IBlockModelMapper.toModel(s -> ((Type)s.getProperties().get(XbowProps.OPTICS_TYPE)).getModelName()));
-        LibNine.PROXY.getRegistrar().queueTESRReg(TileMirror.class, new TESRMirror());
-        LibNine.PROXY.getRegistrar().queueTESRReg(TileSplitter.class, new TESRSplitter());
+        LibNine.PROXY.getRegistrar().queueTESRReg(TileMirror.class, new TESRFreeRotating<>(ResConst.MODEL_MIRROR, false));
+        LibNine.PROXY.getRegistrar().queueTESRReg(TileSplitter.class, new TESRFreeRotating<>(ResConst.MODEL_SPLITTER, true));
+        LibNine.PROXY.getRegistrar().queueTESRReg(TileOneWay.class, new TESRFreeRotating<>(ResConst.MODEL_ONE_WAY, true));
     }
 
     @SuppressWarnings("deprecation")
@@ -97,6 +101,14 @@ public class BlockOptics extends L9BlockStated implements IDismantleable, ILaser
         dropBlockAsItem(world, pos, state, 0);
     }
 
+    @Override
+    public boolean isOpaqueToLaser(WorldBlockPos blockPos, Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
+        if (blockPos.getBlockState().getProperties().get(XbowProps.OPTICS_TYPE) == Type.ONE_WAY) {
+            return dir.dotProduct(((TileOneWay)blockPos.getTileEntity()).getNorm()) == 0;
+        }
+        return true;
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -123,6 +135,8 @@ public class BlockOptics extends L9BlockStated implements IDismantleable, ILaser
         MIRROR("mirror", true, TileMirror::new,
                 BlockRenderLayer.SOLID),
         SPLITTER("splitter", true, TileSplitter::new,
+                BlockRenderLayer.SOLID, BlockRenderLayer.TRANSLUCENT),
+        ONE_WAY("one_way", true, TileOneWay::new,
                 BlockRenderLayer.SOLID, BlockRenderLayer.TRANSLUCENT);
 
         private final String serializableName;

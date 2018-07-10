@@ -6,13 +6,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-public class ModelSplitter extends ModelBase {
+public class ModelMirrorTransparent extends ModelBase implements IModelMirror {
 
     private final ModelRenderer glass;
     private final ModelRenderer longX;
     private final ModelRenderer shortZ;
 
-    public ModelSplitter() {
+    public ModelMirrorTransparent() {
         glass = new ModelRenderer(this);
         glass.addBox(-6F, -2F, -6F, 12, 4, 12);
         longX = new ModelRenderer(this, 0, 16);
@@ -21,6 +21,7 @@ public class ModelSplitter extends ModelBase {
         shortZ.addBox(-7F, -2F, -6F, 1, 4, 12);
     }
 
+    @Override
     public void render() {
         if (MinecraftForgeClient.getRenderPass() == 0) {
             longX.rotateAngleY = 0F;

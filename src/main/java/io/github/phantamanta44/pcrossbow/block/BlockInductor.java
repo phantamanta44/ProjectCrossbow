@@ -2,18 +2,21 @@ package io.github.phantamanta44.pcrossbow.block;
 
 import io.github.phantamanta44.libnine.LibNine;
 import io.github.phantamanta44.libnine.block.L9BlockStated;
+import io.github.phantamanta44.pcrossbow.block.base.IDismantleable;
 import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRInductor;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
 import io.github.phantamanta44.pcrossbow.tile.TileInductor;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
-public class BlockInductor extends L9BlockStated {
+public class BlockInductor extends L9BlockStated implements IDismantleable {
 
     public BlockInductor() {
         super(LangConst.BLOCK_INDUCTOR_NAME, Material.REDSTONE_LIGHT);
@@ -26,6 +29,11 @@ public class BlockInductor extends L9BlockStated {
     protected void initModel() {
         super.initModel();
         LibNine.PROXY.getRegistrar().queueTESRReg(TileInductor.class, new TESRInductor());
+    }
+
+    @Override
+    public void dismantle(EntityPlayer player, World world, BlockPos pos, IBlockState state, EnumFacing face) {
+        dropBlockAsItem(world, pos, state, 0);
     }
 
     @SuppressWarnings("deprecation")
