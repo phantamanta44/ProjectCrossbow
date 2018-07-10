@@ -16,6 +16,7 @@ import io.github.phantamanta44.pcrossbow.item.block.ItemBlockOptics;
 import io.github.phantamanta44.pcrossbow.tile.TileMirror;
 import io.github.phantamanta44.pcrossbow.tile.TileSplitter;
 import io.github.phantamanta44.pcrossbow.tile.base.TileFreeRotatingOptics;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -39,6 +40,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable, ILaser
         super(LangConst.BLOCK_OPTICS_NAME, Material.GLASS);
         setHardness(1F);
         setResistance(4F);
+        setSoundType(SoundType.GLASS);
         setTileFactory((w, m) -> getStates().get(m).get(XbowProps.OPTICS_TYPE).createTileEntity());
     }
 
@@ -67,6 +69,12 @@ public class BlockOptics extends L9BlockStated implements IDismantleable, ILaser
         Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
         if (type.isRotatingOptics()) return EnumBlockRenderType.INVISIBLE;
         throw new ImpossibilityRealizedException();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean hasCustomBreakingProgress(IBlockState state) {
+        return ((Type)state.getProperties().get(XbowProps.OPTICS_TYPE)).isRotatingOptics();
     }
 
     @Override

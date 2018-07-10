@@ -53,7 +53,7 @@ public class ClientProxy extends CommonProxy {
             }
         }
         Minecraft.getMinecraft().effectRenderer.addEffect(
-                new ParticleLaser(world, initialPos, finalPos, initialRadius, power, fluxAngle, 0xDD0000));
+                new ParticleLaser(world, initialPos, finalPos, initialRadius, power, fluxAngle, 0xFF1111));
     }
 
 }

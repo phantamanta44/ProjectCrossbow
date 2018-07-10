@@ -2,6 +2,7 @@ package io.github.phantamanta44.pcrossbow.client.fx;
 
 import io.github.phantamanta44.libnine.util.math.LinAlUtils;
 import io.github.phantamanta44.libnine.util.math.MathUtils;
+import io.github.phantamanta44.libnine.util.render.RenderUtils;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
@@ -26,9 +27,9 @@ public class ParticleLaser extends Particle {
         this.rInit = initialRadius;
         this.rFinal = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, length);
         this.particleRed = ((colour & 0xFF0000) >> 16) / 255F;
-        this.particleGreen = ((colour & 0x0000FF) >> 8) / 255F;
+        this.particleGreen = ((colour & 0x00FF00) >> 8) / 255F;
         this.particleBlue = (colour & 0x0000FF) / 255F;
-        this.particleAlpha = Math.min(Math.max(Double.valueOf(power / 150000D).floatValue(), 0.102F), 0.2F);
+        this.particleAlpha = Math.min(Math.max(Double.valueOf(power / 150000D).floatValue(), 0.102F), 0.2F) / 0.5F;
         this.particleGravity = 0;
         this.motionX = this.motionY = this.motionZ = 0;
         this.prevPosX = this.posX;
@@ -62,59 +63,58 @@ public class ParticleLaser extends Particle {
 
     @Override
     public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
+        RenderUtils.enableFullBrightness();
         GlStateManager.disableFog();
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDepthMask(false);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
 
         Entity player = Minecraft.getMinecraft().player;
-        GL11.glTranslatef((float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - player.lastTickPosX - (player.posX - player.lastTickPosX) * (double)partialTicks),
+        GlStateManager.translate((float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - player.lastTickPosX - (player.posX - player.lastTickPosX) * (double)partialTicks),
                 (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - player.lastTickPosY - (player.posY - player.lastTickPosY) * (double)partialTicks),
                 (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - player.lastTickPosZ - (player.posZ - player.lastTickPosZ) * (double)partialTicks));
         Vec3d ortho = dir.crossProduct(LinAlUtils.Y_POS);
         ortho = ortho.lengthSquared() == 0 ? LinAlUtils.X_POS : ortho.normalize();
         GlStateManager.rotate((float)Math.acos(LinAlUtils.Y_POS.dotProduct(dir)) * -MathUtils.R2D_F,
                 (float)ortho.x, (float)ortho.y, (float)ortho.z);
+        GlStateManager.color(particleRed, particleGreen, particleBlue, particleAlpha);
 
         Tessellator tess = Tessellator.getInstance();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         
-        buffer.pos(rFinal, length, rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(rFinal, length, -rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(rInit, 0, -rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(rInit, 0, rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rFinal, length, rFinal).endVertex();
+        buffer.pos(rFinal, length, -rFinal).endVertex();
+        buffer.pos(rInit, 0, -rInit).endVertex();
+        buffer.pos(rInit, 0, rInit).endVertex();
 
-        buffer.pos(-rInit, 0, rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rInit, 0, -rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rFinal, length, -rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rFinal, length, rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(-rInit, 0, rInit).endVertex();
+        buffer.pos(-rInit, 0, -rInit).endVertex();
+        buffer.pos(-rFinal, length, -rFinal).endVertex();
+        buffer.pos(-rFinal, length, rFinal).endVertex();
 
-        buffer.pos(rInit, 0, rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rInit, 0, rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rFinal, length, rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(rFinal, length, rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rInit, 0, rInit).endVertex();
+        buffer.pos(-rInit, 0, rInit).endVertex();
+        buffer.pos(-rFinal, length, rFinal).endVertex();
+        buffer.pos(rFinal, length, rFinal).endVertex();
 
-        buffer.pos(rFinal, length, -rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rFinal, length, -rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rInit, 0, -rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(rInit, 0, -rInit).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rFinal, length, -rFinal).endVertex();
+        buffer.pos(-rFinal, length, -rFinal).endVertex();
+        buffer.pos(-rInit, 0, -rInit).endVertex();
+        buffer.pos(rInit, 0, -rInit).endVertex();
 
-        buffer.pos(rFinal, length, rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rFinal, length, rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(-rFinal, length, -rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
-        buffer.pos(rFinal, length, -rFinal).color(particleRed, particleGreen, particleBlue, particleAlpha).endVertex();
+        buffer.pos(rFinal, length, rFinal).endVertex();
+        buffer.pos(-rFinal, length, rFinal).endVertex();
+        buffer.pos(-rFinal, length, -rFinal).endVertex();
+        buffer.pos(rFinal, length, -rFinal).endVertex();
 
         tess.draw();
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
+        RenderUtils.restoreLightmap();
         GlStateManager.enableFog();
-        GL11.glDepthMask(true);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 
 }
