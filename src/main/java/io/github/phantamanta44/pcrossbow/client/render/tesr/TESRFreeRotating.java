@@ -29,12 +29,10 @@ public class TESRFreeRotating<T extends TileEntity & IVectorDirectional> extends
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
         GlStateManager.translate(x + 0.5D, y + 0.5D, z + 0.5D);
-        Vec3d reference = LinAlUtils.project(te.getNorm(), LinAlUtils.Y_POS).y >= 0
-                ? LinAlUtils.Y_POS : LinAlUtils.Y_NEG;
-        Vec3d ortho = te.getNorm().crossProduct(reference);
+        Vec3d ortho = te.getNorm().crossProduct(LinAlUtils.Y_POS);
         if (ortho.lengthSquared() > 0) {
             ortho = ortho.normalize();
-            GlStateManager.rotate((float)Math.acos(reference.dotProduct(te.getNorm())) * -MathUtils.R2D_F,
+            GlStateManager.rotate((float)Math.acos(LinAlUtils.Y_POS.dotProduct(te.getNorm())) * -MathUtils.R2D_F,
                     (float)ortho.x, (float)ortho.y, (float)ortho.z);
         }
         bindTexture(texture);

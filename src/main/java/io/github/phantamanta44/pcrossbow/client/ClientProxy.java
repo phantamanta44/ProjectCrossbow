@@ -41,16 +41,17 @@ public class ClientProxy extends CommonProxy {
         RayTraceResult trace = traceRay(world, initialPos, finalPos, pred);
         if (trace != null) {
             WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
-            finalPos = trace.hitVec;
             double distTravelled = trace.hitVec.distanceTo(initialPos);
             double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
             ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
+            if (consumer != null) trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, power, radius, fluxAngle);
             if (consumer != null && consumer.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle)) {
                 consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else if (ClientTickHandler.getTick() % 3 == 0
                         && PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled) >= 6000D) {
                 Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(finalBlockPos.getPos(), trace.sideHit);
             }
+            finalPos = trace.hitVec;
         }
         Minecraft.getMinecraft().effectRenderer.addEffect(
                 new ParticleLaser(world, initialPos, finalPos, initialRadius, power, fluxAngle, 0xFF1111));

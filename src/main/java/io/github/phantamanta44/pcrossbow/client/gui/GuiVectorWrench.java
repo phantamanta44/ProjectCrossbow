@@ -27,7 +27,7 @@ public class GuiVectorWrench extends GuiBase {
         addComponent(textInput);
         addComponent(new GuiComponentCardinal(69, 14, d -> {
             cont.setNorm(d.getVector());
-            textInput.setValue(VecSer.serialize(cont.getNorm()));
+            textInput.setValue(VecSer.serialize(d.getVector()));
         }));
         addComponent(new GuiComponentInfo(LangConst.get(ItemUtils.getLocalizedSubName(XbowItems.wrench, 1)), null));
     }

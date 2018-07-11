@@ -24,6 +24,7 @@ public class ModelMirrorTransparent extends ModelBase implements IModelMirror {
     @Override
     public void render() {
         if (MinecraftForgeClient.getRenderPass() == 0) {
+            longX.mirror = shortZ.mirror = false;
             longX.rotateAngleY = 0F;
             longX.render(0.0625F);
             longX.rotateAngleY = MathUtils.PI_F;

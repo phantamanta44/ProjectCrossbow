@@ -10,6 +10,10 @@ public interface ILaserConsumer {
         return true;
     }
 
+    default Vec3d getBeamEndpoint(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
+        return pos;
+    }
+
     class Default implements ILaserConsumer {
 
         Default() {

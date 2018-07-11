@@ -109,6 +109,7 @@ public class CommonProxy {
             double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
             IBlockState state = finalBlockPos.getBlockState();
             ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
+            if (consumer != null) trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, power, radius, fluxAngle);
             if (consumer != null && consumer.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle)) {
                 consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
             } else {
