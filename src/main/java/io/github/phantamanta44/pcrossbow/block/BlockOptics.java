@@ -6,9 +6,7 @@ import io.github.phantamanta44.libnine.block.state.IBlockModelMapper;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
 import io.github.phantamanta44.libnine.util.Accrue;
 import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
-import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.pcrossbow.block.base.IDismantleable;
-import io.github.phantamanta44.pcrossbow.block.base.ILaserOpaque;
 import io.github.phantamanta44.pcrossbow.block.base.XbowProps;
 import io.github.phantamanta44.pcrossbow.client.render.tesr.TESRFreeRotating;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;
@@ -27,7 +25,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -35,7 +32,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
-public class BlockOptics extends L9BlockStated implements IDismantleable, ILaserOpaque {
+public class BlockOptics extends L9BlockStated implements IDismantleable {
 
     private static final AxisAlignedBB BB_ROTATING_OPTICS = new AxisAlignedBB(0.125D, 0.125D, 0.125D, 0.875D, 0.875D, 0.875D);
 
@@ -101,21 +98,11 @@ public class BlockOptics extends L9BlockStated implements IDismantleable, ILaser
         dropBlockAsItem(world, pos, state, 0);
     }
 
-    @Override
-    public boolean isOpaqueToLaser(WorldBlockPos blockPos, Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
-        if (blockPos.getBlockState().getProperties().get(XbowProps.OPTICS_TYPE) == Type.ONE_WAY) {
-            return dir.dotProduct(((TileOneWay)blockPos.getTileEntity()).getNorm()) == 0;
-        }
-        return true;
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
-        if (type.isRotatingOptics()) {
-            return BB_ROTATING_OPTICS;
-        }
+        if (type.isRotatingOptics()) return BB_ROTATING_OPTICS;
         return FULL_BLOCK_AABB;
     }
 

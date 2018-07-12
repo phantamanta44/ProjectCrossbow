@@ -6,6 +6,7 @@ import io.github.phantamanta44.libnine.util.data.serialization.AutoSerialize;
 import io.github.phantamanta44.libnine.util.data.serialization.IDatum;
 import io.github.phantamanta44.libnine.util.math.LinAlUtils;
 import io.github.phantamanta44.libnine.util.world.WorldUtils;
+import io.github.phantamanta44.pcrossbow.LasingResult;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.IVectorDirectional;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
@@ -40,9 +41,10 @@ public abstract class TileFreeRotatingOptics extends L9TileEntity implements ILa
         setDirty();
     }
 
-    @Override
-    public boolean canConsumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
-        return dir.dotProduct(getNorm()) != 0;
+    protected LasingResult checkBeam(Vec3d pos, Vec3d dir) {
+        if (dir.dotProduct(getNorm()) == 0) return LasingResult.OBSTRUCT;
+        if (!WorldUtils.pointLiesInBlock(pos, getPos())) return LasingResult.PASS;
+        return LasingResult.CONSUME;
     }
 
     @Override

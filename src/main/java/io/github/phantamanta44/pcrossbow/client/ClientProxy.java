@@ -1,14 +1,14 @@
 package io.github.phantamanta44.pcrossbow.client;
 
 import io.github.phantamanta44.libnine.client.event.ClientTickHandler;
-import io.github.phantamanta44.libnine.util.function.ITriPredicate;
+import io.github.phantamanta44.libnine.util.tuple.IPair;
 import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.pcrossbow.CommonProxy;
+import io.github.phantamanta44.pcrossbow.LasingResult;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.client.fx.ParticleLaser;
 import io.github.phantamanta44.pcrossbow.client.gui.XbowGuis;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -35,19 +35,13 @@ public class ClientProxy extends CommonProxy {
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d finalPos = initialPos.add(dir.scale(range));
-        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred
-                = (s, p, t) -> isLaserOpaque(s, p, t, initialPos, dir, power, initialRadius, fluxAngle);
-        if (src != null) pred = pred.pre((b, p, t) -> !p.equals(src));
-        RayTraceResult trace = traceRay(world, initialPos, finalPos, pred);
-        if (trace != null) {
+        IPair<LasingResult, RayTraceResult> result = traceRay(world, initialPos, finalPos, dir, src, power, initialRadius, fluxAngle);
+        if (result != null) {
+            RayTraceResult trace = result.getB();
             WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
             double distTravelled = trace.hitVec.distanceTo(initialPos);
-            double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
-            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
-            if (consumer != null) trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, power, radius, fluxAngle);
-            if (consumer != null && consumer.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle)) {
-                consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
-            } else if (ClientTickHandler.getTick() % 3 == 0
+            if (result.getA() == LasingResult.OBSTRUCT
+                        && ClientTickHandler.getTick() % 3 == 0
                         && PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled) >= 6000D) {
                 Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(finalBlockPos.getPos(), trace.sideHit);
             }

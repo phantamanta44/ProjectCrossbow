@@ -1,6 +1,6 @@
 package io.github.phantamanta44.pcrossbow;
 
-import io.github.phantamanta44.libnine.util.function.ITriPredicate;
+import io.github.phantamanta44.libnine.util.tuple.IPair;
 import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
@@ -36,7 +36,7 @@ public class CommonProxy {
 
     protected static final double INTENSITY_CUTOFF = 0.1D;
 
-    private static final ThreadLocal<Deque<LasingTask>> lasingQueue = new ThreadLocal<>();
+    protected static final ThreadLocal<Deque<LasingTask>> lasingQueue = new ThreadLocal<>();
 
     public void onPreInit(FMLPreInitializationEvent event) {
         XbowCaps.init();
@@ -80,10 +80,8 @@ public class CommonProxy {
         Vec3d dir = unnormDir.normalize();
         double range = Math.min(PhysicsUtils.calculateRange(power, initialRadius, fluxAngle, INTENSITY_CUTOFF), 128);
         Vec3d maxPotentialPos = initialPos.add(dir.scale(range));
-        ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> pred
-                = (s, p, t) -> isLaserOpaque(s, p, t, initialPos, dir, power, initialRadius, fluxAngle);
-        if (src != null) pred = pred.pre((b, p, t) -> !p.equals(src));
-        RayTraceResult trace = traceRay(world, initialPos, maxPotentialPos, pred);
+        IPair<LasingResult, RayTraceResult> result = traceRay(world, initialPos, maxPotentialPos, dir, src, power, initialRadius, fluxAngle);
+        RayTraceResult trace = result == null ? null : result.getB();
         Vec3d finalPos = trace != null ? trace.hitVec : maxPotentialPos;
         world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(
                 Math.min(initialPos.x, finalPos.x) - 0.1,
@@ -93,7 +91,7 @@ public class CommonProxy {
                 Math.max(initialPos.y, finalPos.y) + 0.1,
                 Math.max(initialPos.z, finalPos.z) + 0.1
         )).stream()
-                .filter(e -> intersectsLine(e.getEntityBoundingBox(), initialPos, finalPos))
+                .filter(e -> PhysicsUtils.intersectsLine(e.getEntityBoundingBox(), initialPos, finalPos))
                 .forEach(e -> {
                     double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle,
                             e.getDistance(initialPos.x, initialPos.y, initialPos.z));
@@ -106,13 +104,8 @@ public class CommonProxy {
             WorldBlockPos finalBlockPos = new WorldBlockPos(world, trace.getBlockPos());
             double distTravelled = trace.hitVec.distanceTo(initialPos);
             double intensity = PhysicsUtils.calculateIntensity(power, initialRadius, fluxAngle, distTravelled);
-            double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, distTravelled);
             IBlockState state = finalBlockPos.getBlockState();
-            ILaserConsumer consumer = getLaserConsumer(finalBlockPos, dir, power, radius, fluxAngle, trace);
-            if (consumer != null) trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, power, radius, fluxAngle);
-            if (consumer != null && consumer.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle)) {
-                consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
-            } else {
+            if (result.getA() == LasingResult.OBSTRUCT) {
                 float hardness = state.getBlockHardness(world, finalBlockPos.getPos());
                 boolean shouldSetFire = true;
                 if (intensity / 25000D >= hardness && hardness >= 0) {
@@ -142,75 +135,55 @@ public class CommonProxy {
         }
     }
 
-    protected boolean isLaserOpaque(IBlockState state, WorldBlockPos pos, @Nullable RayTraceResult trace,
-                                    Vec3d initialPos, Vec3d dir, double power, double initialRadius, double fluxAngle) {
-        if (trace == null) return false;
-        double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, trace.hitVec.distanceTo(initialPos));
-        return state.isOpaqueCube()
-                || (getLaserConsumer(pos, dir, power, radius, fluxAngle, trace) != null)
-                || (state.getBlock() instanceof ILaserOpaque && ((ILaserOpaque)state.getBlock())
-                        .isOpaqueToLaser(pos, trace.hitVec, dir, power, radius, fluxAngle));
-    }
-
-    @Nullable
-    public ILaserConsumer getLaserConsumer(WorldBlockPos pos, Vec3d dir,
-                                           double power, double radius, double fluxAngle, RayTraceResult trace) {
+    protected ILaserConsumer getLaserConsumer(WorldBlockPos pos, EnumFacing dir) {
         TileEntity tile = pos.getTileEntity();
-        if (tile == null || !tile.hasCapability(XbowCaps.LASER_CONSUMER, trace.sideHit)) return null;
-        ILaserConsumer aspect = tile.getCapability(XbowCaps.LASER_CONSUMER, trace.sideHit);
-        return (aspect != null && aspect.canConsumeBeam(trace.hitVec, dir, power, radius, fluxAngle))
-                ? aspect : null;
+        return (tile != null && tile.hasCapability(XbowCaps.LASER_CONSUMER, dir))
+                ? tile.getCapability(XbowCaps.LASER_CONSUMER, dir) : null;
     }
 
-    public boolean intersectsLine(AxisAlignedBB prism, Vec3d lineMin, Vec3d lineMax) {
-        double x1 = lineMin.x, x2 = lineMax.x, dx = x2 - x1;
-        double y1 = lineMin.y, y2 = lineMax.y, dy = y2 - y1;
-        double z1 = lineMin.z, z2 = lineMax.z, dz = z2 - z1;
-        double dydx = dy / dx, dzdx = dz / dx, dzdy = dz / dy;
-        double inter1, inter2;
-        // project to xy plane
-        inter1 = (prism.minX - x1) * dydx + y1;
-        inter2 = (prism.maxX - x1) * dydx + y1;
-        if (Math.min(inter1, inter2) > prism.maxY || Math.max(inter1, inter2) < prism.minY) return false;
-        // project to xz plane
-        inter1 = (prism.minX - x1) * dzdx + z1;
-        inter2 = (prism.maxX - x1) * dzdx + z1;
-        if (Math.min(inter1, inter2) > prism.maxZ || Math.max(inter1, inter2) < prism.minZ) return false;
-        // project to yz plane
-        inter1 = (prism.minY - y1) * dzdy + z1;
-        inter2 = (prism.maxY - y1) * dzdy + z1;
-        return !(Math.min(inter1, inter2) > prism.maxZ && Math.max(inter1, inter2) < prism.minZ);
+    protected LasingResult tryLasing(IBlockState state, WorldBlockPos pos, @Nullable RayTraceResult trace,
+                                   Vec3d initialPos, Vec3d dir, double power, double initialRadius, double fluxAngle) {
+        if (trace == null) return LasingResult.PASS;
+        double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, trace.hitVec.distanceTo(initialPos));
+        ILaserConsumer consumer = getLaserConsumer(pos, trace.sideHit);
+        if (consumer != null) {
+            trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, power, radius, fluxAngle);
+            return consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
+        }
+        if (state.getBlock() instanceof ILaserOpaque) {
+            return ((ILaserOpaque)state.getBlock()).getLasingResult(pos, trace.hitVec, dir, power, radius, fluxAngle);
+        }
+        return state.isOpaqueCube() ? LasingResult.OBSTRUCT : LasingResult.PASS;
     }
 
     @Nullable
-    public RayTraceResult traceRay(World world, Vec3d start, Vec3d end,
-                                   ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> cutoff) {
-        return traceRay(world, start, end, cutoff, true);
-    }
-
-    @Nullable
-    public RayTraceResult traceRay(World world, Vec3d pos, Vec3d end,
-                                   ITriPredicate<IBlockState, WorldBlockPos, RayTraceResult> cutoff, boolean checkInitial) {
-        if (!Double.isNaN(pos.x) && !Double.isNaN(pos.y) && !Double.isNaN(pos.z)) {
+    protected IPair<LasingResult, RayTraceResult> traceRay(World world, Vec3d initialPos, Vec3d end, Vec3d dir, @Nullable WorldBlockPos src,
+                                                         double power, double initialRadius, double fluxAngle) {
+        if (!Double.isNaN(initialPos.x) && !Double.isNaN(initialPos.y) && !Double.isNaN(initialPos.z)) {
             if (!Double.isNaN(end.x) && !Double.isNaN(end.y) && !Double.isNaN(end.z)) {
                 int xf = MathHelper.floor(end.x);
                 int yf = MathHelper.floor(end.y);
                 int zf = MathHelper.floor(end.z);
-                int x = MathHelper.floor(pos.x);
-                int y = MathHelper.floor(pos.y);
-                int z = MathHelper.floor(pos.z);
+                int x = MathHelper.floor(initialPos.x);
+                int y = MathHelper.floor(initialPos.y);
+                int z = MathHelper.floor(initialPos.z);
                 BlockPos blockPos = new BlockPos(x, y, z);
-                IBlockState si = world.getBlockState(blockPos);
-                Block bi = si.getBlock();
-                RayTraceResult collision = si.collisionRayTrace(world, blockPos, pos, end);
-                if (checkInitial && cutoff.test(si, new WorldBlockPos(world, blockPos), collision)
-                        && (si.getCollisionBoundingBox(world, blockPos) != null
-                        && (bi.canCollideCheck(si, false)) || (bi instanceof IFluidBlock || bi instanceof BlockLiquid))) {
-                    if (collision != null) {
-                        collision.hitVec = collision.hitVec.subtract(collision.hitVec.subtract(pos).normalize());
-                        return collision;
+                RayTraceResult collision;
+                LasingResult lasing;
+                if (src == null || !blockPos.equals(src.getPos())) {
+                    IBlockState si = world.getBlockState(blockPos);
+                    Block bi = si.getBlock();
+                    collision = si.collisionRayTrace(world, blockPos, initialPos, end);
+                    lasing = tryLasing(si, new WorldBlockPos(world, blockPos), collision, initialPos, dir, power, initialRadius, fluxAngle);
+                    if (lasing != LasingResult.PASS && (si.getCollisionBoundingBox(world, blockPos) != null
+                            && (bi.canCollideCheck(si, false)) || (bi instanceof IFluidBlock || bi instanceof BlockLiquid))) {
+                        if (collision != null) {
+                            collision.hitVec = collision.hitVec.subtract(dir);
+                            return IPair.of(lasing, collision);
+                        }
                     }
                 }
+                Vec3d pos = initialPos;
                 int n = 200;
                 while (n-- >= 0) {
                     if (Double.isNaN(pos.x) || Double.isNaN(pos.y) || Double.isNaN(pos.z)
@@ -275,10 +248,11 @@ public class CommonProxy {
                     Block currentBlock = currentState.getBlock();
                     boolean isLiquid = currentBlock instanceof IFluidBlock || currentBlock instanceof BlockLiquid;
                     collision = currentState.collisionRayTrace(world, blockPos, pos, end);
-                    if (cutoff.test(currentState, new WorldBlockPos(world, blockPos), collision)
-                            && (currentState.getCollisionBoundingBox(world, blockPos) != null || isLiquid)) {
+                    lasing = tryLasing(currentState, new WorldBlockPos(world, blockPos), collision, initialPos, dir,
+                            power, initialRadius, fluxAngle);
+                    if (lasing != LasingResult.PASS && (currentState.getCollisionBoundingBox(world, blockPos) != null || isLiquid)) {
                         if (isLiquid || currentBlock.canCollideCheck(currentState, false)) {
-                            if (collision != null) return collision;
+                            if (collision != null) return IPair.of(lasing, collision);
                         }
                     }
                 }
@@ -291,16 +265,16 @@ public class CommonProxy {
         }
     }
 
-    private static class LasingTask {
+    protected static class LasingTask {
 
-        private final World world;
-        private final Vec3d initialPos;
-        private final Vec3d unnormDir;
-        private final double power;
-        private final double initialRadius;
-        private final double fluxAngle;
+        protected final World world;
+        protected final Vec3d initialPos;
+        protected final Vec3d unnormDir;
+        protected final double power;
+        protected final double initialRadius;
+        protected final double fluxAngle;
         @Nullable
-        private final WorldBlockPos src;
+        protected final WorldBlockPos src;
 
         LasingTask(World world, Vec3d initialPos, Vec3d unnormDir,
                    double power, double initialRadius, double fluxAngle, @Nullable WorldBlockPos src) {
