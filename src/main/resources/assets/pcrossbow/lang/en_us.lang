@@ -9,6 +9,8 @@ tile.pcrossbow:optics0.name=Mirror
 tile.pcrossbow:optics1.name=Beam Splitter
 tile.pcrossbow:optics2.name=Unidirectional Mirror
 tile.pcrossbow:sensor.name=Beam Detector
+tile.pcrossbow:redstone_window_direct.name=Selectively Permeable Glass
+tile.pcrossbow:redstone_window_inverted.name=Selectively Permeable Glass (Inverted)
 
 item.pcrossbow:wrench0.name=Optical Wrench
 item.pcrossbow:wrench1.name=Vector Gauge

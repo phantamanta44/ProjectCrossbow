@@ -1,0 +1,15 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "pcrossbow:redstone_window"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "active": [{
+      "textures": {
+        "all": "pcrossbow:blocks/redstone_window_active"
+      }
+    }]
+  }
+}

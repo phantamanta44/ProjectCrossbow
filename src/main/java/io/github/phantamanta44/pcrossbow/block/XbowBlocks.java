@@ -9,6 +9,7 @@ public class XbowBlocks {
     public static BlockInductor inductor;
     public static BlockOptics optics;
     public static BlockSensor sensor;
+    public static BlockRedstoneWindow redstoneWindow;
 
     public static void init() {
         LibNine.PROXY.getRegistrar().begin(Xbow.INSTANCE);
@@ -16,6 +17,7 @@ public class XbowBlocks {
         inductor = new BlockInductor();
         optics = new BlockOptics();
         sensor = new BlockSensor();
+        redstoneWindow = new BlockRedstoneWindow();
         LibNine.PROXY.getRegistrar().end();
     }
 

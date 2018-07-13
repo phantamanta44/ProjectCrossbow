@@ -153,13 +153,13 @@ public class CommonProxy {
         double radius = PhysicsUtils.calculateRadius(initialRadius, fluxAngle, trace.hitVec.distanceTo(initialPos));
         ILaserConsumer consumer = getLaserConsumer(pos, trace.sideHit);
         if (consumer != null) {
-            trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, power, radius, fluxAngle);
+            trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, trace.sideHit, power, radius, fluxAngle);
             Xbow.INSTANCE.getWsdManager().get(XbowWSDs.LASER_CONSUMER_TRACKER, pos.getWorld()).markLased(pos.getPos());
-            return consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
+            return consumer.consumeBeam(trace.hitVec, dir, trace.sideHit, power, radius, fluxAngle);
         }
         if (state.getBlock() instanceof ILaserBlock) {
             Xbow.INSTANCE.getWsdManager().get(XbowWSDs.LASER_CONSUMER_TRACKER, pos.getWorld()).markLased(pos.getPos());
-            return ((ILaserBlock)state.getBlock()).getLasingResult(pos, trace.hitVec, dir, power, radius, fluxAngle);
+            return ((ILaserBlock)state.getBlock()).getLasingResult(pos, trace.hitVec, dir, trace.sideHit, power, radius, fluxAngle);
         }
         return state.isOpaqueCube() ? LasingResult.OBSTRUCT : LasingResult.PASS;
     }

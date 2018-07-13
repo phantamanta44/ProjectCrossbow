@@ -13,6 +13,7 @@ import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.constant.XbowConst;
 import io.github.phantamanta44.pcrossbow.util.EnergyUtils;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -47,7 +48,7 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
     }
 
     @Override
-    public LasingResult consumeBeam(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
+    public LasingResult consumeBeam(Vec3d pos, Vec3d dir, EnumFacing face, double power, double radius, double fluxAngle) {
         if (!world.isRemote) {
             boolean redstoneChanged = energy.getQuantity() == 0;
             energy.offer(Math.max((int)Math.floor(power * (1 - Math.pow(2 * radius, 3))), 0), true);

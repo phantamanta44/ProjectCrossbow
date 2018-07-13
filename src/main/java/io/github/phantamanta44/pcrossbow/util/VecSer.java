@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class VecSer {
 
-    private static final Pattern PATTERN = Pattern.compile("(-?\\d+(?:\\.(?:\\d+)?)?) (-?\\d+(?:\\.(?:\\d+)?+)?) (-?\\d+(?:\\.(?:\\d+)?+)?)");
+    private static final Pattern PATTERN = Pattern.compile("(-?(?:\\d+)?(?:\\.(?:\\d+)?)?) (-?(?:\\d+)?(?:\\.(?:\\d+)?+)?) (-?(?:\\d+)?(?:\\.(?:\\d+)?+)?)");
 
     public static boolean isValidVector(String s) {
         return PATTERN.matcher(s).matches();

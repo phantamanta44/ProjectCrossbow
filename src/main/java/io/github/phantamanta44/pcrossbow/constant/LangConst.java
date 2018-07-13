@@ -9,6 +9,7 @@ public class LangConst {
     public static final String BLOCK_INDUCTOR_NAME = "inductor";
     public static final String BLOCK_OPTICS_NAME = "optics";
     public static final String BLOCK_SENSOR_NAME = "sensor";
+    public static final String BLOCK_REDSTONE_WINDOW_NAME = "redstone_window";
 
     public static final String ITEM_WRENCH_NAME = "wrench";
     public static final String ITEM_MOD_POWER_NAME = "beam_mod_power";

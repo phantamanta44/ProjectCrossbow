@@ -87,7 +87,8 @@ public class BlockSensor extends L9BlockStated implements IDismantleable, ILaser
     }
 
     @Override
-    public LasingResult getLasingResult(WorldBlockPos blockPos, Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
+    public LasingResult getLasingResult(WorldBlockPos blockPos, Vec3d pos, Vec3d dir, EnumFacing face,
+                                        double power, double radius, double fluxAngle) {
         if (!blockPos.getWorld().isRemote) {
             blockPos.getWorld().setBlockState(
                     blockPos.getPos(), blockPos.getBlockState().withProperty(XbowProps.ACTIVE, true));

@@ -12,6 +12,7 @@ import io.github.phantamanta44.libnine.tile.RegisterTile;
 import io.github.phantamanta44.libnine.util.data.ByteUtils;
 import io.github.phantamanta44.libnine.util.data.serialization.AutoSerialize;
 import io.github.phantamanta44.libnine.util.data.serialization.IDatum;
+import io.github.phantamanta44.libnine.util.math.LinAlUtils;
 import io.github.phantamanta44.libnine.util.world.IRedstoneControllable;
 import io.github.phantamanta44.libnine.util.world.RedstoneBehaviour;
 import io.github.phantamanta44.libnine.util.world.WorldUtils;
@@ -97,7 +98,7 @@ public abstract class TileLaser extends L9TileEntityTicking implements IRedstone
         if (energy.getQuantity() > 0 && getRedstoneBehaviour().canWork(getWorldPos())) {
             int power = energy.draw((int)Math.ceil(getPower()), !world.isRemote);
             if (power > 0) {
-                Vec3d dir = new Vec3d(rotation.get().getDirectionVec());
+                Vec3d dir = LinAlUtils.getDir(rotation.get());
                 Xbow.PROXY.doLasing(world, WorldUtils.getBlockCenter(pos).add(dir.scale(0.5D)), dir,
                         power, getRadius(), getFluxAngle(), getWorldPos());
                 if (world.isRemote) {

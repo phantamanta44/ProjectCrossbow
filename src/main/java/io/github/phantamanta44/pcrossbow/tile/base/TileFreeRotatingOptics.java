@@ -10,6 +10,7 @@ import io.github.phantamanta44.pcrossbow.LasingResult;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.IVectorDirectional;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -48,7 +49,7 @@ public abstract class TileFreeRotatingOptics extends L9TileEntity implements ILa
     }
 
     @Override
-    public Vec3d getBeamEndpoint(Vec3d pos, Vec3d dir, double power, double radius, double fluxAngle) {
+    public Vec3d getBeamEndpoint(Vec3d pos, Vec3d dir, EnumFacing face, double power, double radius, double fluxAngle) {
         Vec3d cast = LinAlUtils.castOntoPlane(pos, dir, WorldUtils.getBlockCenter(getPos()), getNorm());
         return cast != null ? cast : pos;
     }
