@@ -48,6 +48,7 @@ public class ResConst {
     private static final String GUI_KEY = "textures/gui/";
     public static final ResourceLocation GUI_VECTOR_WRENCH = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "vector_wrench.png");
     public static final ResourceLocation GUI_LASER = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "laser.png");
+    public static final ResourceLocation GUI_INDUCTOR = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "inductor.png");
 
     /*
      * Component textures

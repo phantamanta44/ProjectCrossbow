@@ -33,7 +33,11 @@ item.pcrossbow:beam_mod_flux_angle4.name=Defocusing Lens
 
 pcrossbow.info.fraction=%s / %s
 pcrossbow.info.energy=Energy: %s / %s
-pcrossbow.info.vector_config=Vector Configuration
+pcrossbow.info.not_applicable=N/A
+pcrossbow.info.power_name=Power
+pcrossbow.info.radius_name=Radius
+pcrossbow.info.flux_angle_name=Flux Angle
+pcrossbow.info.intensity_name=Intensity
 pcrossbow.info.power=Power: %s
 pcrossbow.info.radius=Radius: %s
 pcrossbow.info.flux_angle=Flux Angle: %s

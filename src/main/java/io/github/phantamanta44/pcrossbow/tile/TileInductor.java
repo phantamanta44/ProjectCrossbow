@@ -24,9 +24,12 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
     @AutoSerialize
     private final IIntReservoir energy;
 
+    private double lastPower, lastRadius, lastFluxAngle;
+
     public TileInductor() {
         this.energy = new SimpleIntReservoir(Integer.MAX_VALUE);
         energy.onQuantityChange((o, n) -> setDirty());
+        this.lastPower = this.lastRadius = this.lastFluxAngle = 0D;
         markRequiresSync();
         setInitialized();
     }
@@ -42,14 +45,25 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
         return energy.getQuantity();
     }
 
-    @Override
-    public boolean shouldRenderInPass(int pass) {
-        return true;
+    public double getLastPower() {
+        return lastPower;
+    }
+
+    public double getLastRadius() {
+        return lastRadius;
+    }
+
+    public double getLastFluxAngle() {
+        return lastFluxAngle;
     }
 
     @Override
     public LasingResult consumeBeam(Vec3d pos, Vec3d dir, EnumFacing face, double power, double radius, double fluxAngle) {
-        if (!world.isRemote) {
+        if (world.isRemote) {
+            this.lastPower = power;
+            this.lastRadius = radius;
+            this.lastFluxAngle = fluxAngle;
+        } else {
             boolean redstoneChanged = energy.getQuantity() == 0;
             energy.offer(Math.max((int)Math.floor(power * (1 - Math.pow(2 * radius, 3))), 0), true);
             if (redstoneChanged) world.notifyNeighborsOfStateChange(this.pos, blockType, false);
@@ -71,6 +85,11 @@ public class TileInductor extends L9TileEntityTicking implements ILaserConsumer 
                 setDirty();
             }
         }
+    }
+
+    @Override
+    public boolean shouldRenderInPass(int pass) {
+        return true;
     }
 
 }

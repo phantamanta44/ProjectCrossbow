@@ -18,11 +18,17 @@ public class LangConst {
 
     public static final String GUI_VECTOR_WRENCH = "vector_wrench";
     public static final String GUI_LASER = "laser";
+    public static final String GUI_INDUCTOR = "inductor";
 
     private static final String INFO_KEY = XbowConst.MOD_ID + ".info.";
     public static final String INFO_FRACTION = INFO_KEY + "fraction";
     public static final String INFO_ENERGY_STORED = INFO_KEY + "energy";
-    public static final String INFO_VECTOR_CONFIG = INFO_KEY + "vector_config";
+    public static final String INFO_NOT_APPLICABLE = INFO_KEY + "not_applicable";
+
+    public static final String INFO_POWER_NAME = INFO_KEY + "power_name";
+    public static final String INFO_RADIUS_NAME = INFO_KEY + "radius_name";
+    public static final String INFO_FLUX_ANGLE_NAME = INFO_KEY + "flux_angle_name";
+    public static final String INFO_INTENSITY_NAME = INFO_KEY + "intensity_name";
 
     public static final String INFO_POWER = INFO_KEY + "power";
     public static final String INFO_RADIUS = INFO_KEY + "radius";
