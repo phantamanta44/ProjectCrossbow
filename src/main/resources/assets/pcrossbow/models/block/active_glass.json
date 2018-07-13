@@ -1,7 +1,7 @@
 {
   "textures": {
     "particle": "pcrossbow:blocks/inductor",
-    "glass": "pcrossbow:model/block/inductor"
+    "glass": "pcrossbow:model/block/sensor"
   },
   "elements": [{
     "from": [2, 2, 2], "to": [14, 14, 14],

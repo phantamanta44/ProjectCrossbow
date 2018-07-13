@@ -54,6 +54,11 @@ public class BlockSensor extends L9BlockStated implements IDismantleable, ILaser
     }
 
     @Override
+    public int damageDropped(IBlockState state) {
+        return getMetaFromState(getDefaultState());
+    }
+
+    @Override
     public void dismantle(EntityPlayer player, World world, BlockPos pos, IBlockState state, EnumFacing face) {
         dropBlockAsItem(world, pos, state, 0);
     }

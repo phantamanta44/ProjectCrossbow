@@ -11,7 +11,11 @@
   },
   "variants": {
     "normal": [{}],
-    "active=true": [{}],
+    "active=true": [{
+      "custom": {
+        "Translucent": "pcrossbow:sensor#glass_active"
+      }
+    }],
     "active=false": [{}],
     "inventory": [{}],
     "frame": [{
@@ -19,6 +23,9 @@
     }],
     "glass": [{
       "model": "pcrossbow:inductor_glass"
+    }],
+    "glass_active": [{
+      "model": "pcrossbow:active_glass"
     }]
   }
 }
