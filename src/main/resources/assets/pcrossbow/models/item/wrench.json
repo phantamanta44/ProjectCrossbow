@@ -1,0 +1,25 @@
+{
+  "9s": "pi",
+  "archetype": {
+    "parent": "item/handheld"
+  },
+  "mutations": {
+    "type": {
+      "optical": {
+        "textures": {
+          "layer0": "pcrossbow:items/wrench_optical"
+        }
+      },
+      "vector": {
+        "textures": {
+          "layer0": "pcrossbow:items/wrench_vector"
+        }
+      },
+      "clone": {
+        "textures": {
+          "layer0": "pcrossbow:items/wrench_clone"
+        }
+      }
+    }
+  }
+}

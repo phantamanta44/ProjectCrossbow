@@ -7,5 +7,6 @@ public class NBTConst {
     public static final String OPEN = "Open";
     public static final String CLOSED = "Closed";
     public static final String WORLD = "World";
+    public static final String DIRECTION = "Direction";
 
 }

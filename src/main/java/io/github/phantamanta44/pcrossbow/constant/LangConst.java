@@ -22,6 +22,7 @@ public class LangConst {
     private static final String INFO_KEY = XbowConst.MOD_ID + ".info.";
     public static final String INFO_FRACTION = INFO_KEY + "fraction";
     public static final String INFO_ENERGY_STORED = INFO_KEY + "energy";
+    public static final String INFO_VECTOR_CONFIG = INFO_KEY + "vector_config";
 
     public static final String INFO_POWER = INFO_KEY + "power";
     public static final String INFO_RADIUS = INFO_KEY + "radius";
@@ -44,6 +45,10 @@ public class LangConst {
     public static String getCardinalName(Cardinal dir) {
         return INFO_CARDINAL_KEY + dir.name().toLowerCase();
     }
+
+    private static final String MSG_KEY = XbowConst.MOD_ID + ".message.";
+    public static final String MSG_CLONE_COPY = MSG_KEY + "clone_copy";
+    public static final String MSG_CLONE_PASTE = MSG_KEY + "clone_paste";
 
     private static final String UNIT_KEY = XbowConst.MOD_ID + ".unit.";
     public static final String UNIT_ENERGY = UNIT_KEY + "energy";

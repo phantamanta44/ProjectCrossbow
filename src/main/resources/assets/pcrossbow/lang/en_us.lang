@@ -14,6 +14,7 @@ tile.pcrossbow:redstone_window_inverted.name=Selectively Permeable Glass (Invert
 
 item.pcrossbow:wrench0.name=Optical Wrench
 item.pcrossbow:wrench1.name=Vector Gauge
+item.pcrossbow:wrench2.name=Vector Cloning Tool
 item.pcrossbow:beam_mod_power0.name=Redstone-Diamond Lasing Medium
 item.pcrossbow:beam_mod_power1.name=Titanium-Sapphire Lasing Medium
 item.pcrossbow:beam_mod_power2.name=Ytterbium Glass Lasing Medium
@@ -32,6 +33,7 @@ item.pcrossbow:beam_mod_flux_angle4.name=Defocusing Lens
 
 pcrossbow.info.fraction=%s / %s
 pcrossbow.info.energy=Energy: %s / %s
+pcrossbow.info.vector_config=Vector Configuration
 pcrossbow.info.power=Power: %s
 pcrossbow.info.radius=Radius: %s
 pcrossbow.info.flux_angle=Flux Angle: %s
@@ -44,6 +46,9 @@ pcrossbow.info.mod_flux_angle=Flux Angle Factor: %s
 pcrossbow.info.redstone_ignored=No Redstone Control
 pcrossbow.info.redstone_direct=Direct Redstone Control
 pcrossbow.info.redstone_inverted=Inverted Redstone Control
+
+pcrossbow.message.clone_copy=Copied Vector
+pcrossbow.message.clone_paste=Wrote Vector
 
 pcrossbow.unit.energy=FE
 pcrossbow.unit.time=t
