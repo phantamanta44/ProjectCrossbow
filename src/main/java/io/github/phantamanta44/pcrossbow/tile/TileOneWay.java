@@ -28,10 +28,8 @@ public class TileOneWay extends TileFreeRotatingOptics {
 
     @Override
     protected LasingResult checkBeam(Vec3d pos, Vec3d dir) {
-        if (dir.dotProduct(getNorm()) > 0) return LasingResult.OBSTRUCT;
-        if (!WorldUtils.pointLiesInBlock(pos, getPos())) return LasingResult.PASS;
-        return LasingResult.CONSUME;
-
+        return (dir.dotProduct(getNorm()) < 0 || !WorldUtils.pointLiesInBlock(pos, getPos()))
+                ? LasingResult.PASS : LasingResult.CONSUME;
     }
 
 }

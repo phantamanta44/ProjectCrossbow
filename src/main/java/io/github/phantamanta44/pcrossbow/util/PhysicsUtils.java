@@ -41,7 +41,7 @@ public class PhysicsUtils {
         // project to yz plane
         inter1 = (prism.minY - y1) * dzdy + z1;
         inter2 = (prism.maxY - y1) * dzdy + z1;
-        return !(Math.min(inter1, inter2) > prism.maxZ && Math.max(inter1, inter2) < prism.minZ);
+        return !(Math.min(inter1, inter2) > prism.maxZ || Math.max(inter1, inter2) < prism.minZ);
     }
 
 }

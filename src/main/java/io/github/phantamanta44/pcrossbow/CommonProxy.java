@@ -6,11 +6,12 @@ import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
 import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
-import io.github.phantamanta44.pcrossbow.block.base.ILaserOpaque;
+import io.github.phantamanta44.pcrossbow.block.base.ILaserBlock;
 import io.github.phantamanta44.pcrossbow.client.gui.XbowGuis;
 import io.github.phantamanta44.pcrossbow.item.XbowItems;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import io.github.phantamanta44.pcrossbow.util.XbowDamage;
+import io.github.phantamanta44.pcrossbow.wsd.XbowWSDs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -23,10 +24,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nullable;
 import java.util.Deque;
@@ -39,7 +43,9 @@ public class CommonProxy {
     protected static final ThreadLocal<Deque<LasingTask>> lasingQueue = new ThreadLocal<>();
 
     public void onPreInit(FMLPreInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(this);
         XbowCaps.init();
+        XbowWSDs.init();
         // TODO Load config
         XbowBlocks.init();
         XbowItems.init();
@@ -148,12 +154,21 @@ public class CommonProxy {
         ILaserConsumer consumer = getLaserConsumer(pos, trace.sideHit);
         if (consumer != null) {
             trace.hitVec = consumer.getBeamEndpoint(trace.hitVec, dir, power, radius, fluxAngle);
+            Xbow.INSTANCE.getWsdManager().get(XbowWSDs.LASER_CONSUMER_TRACKER, pos.getWorld()).markLased(pos.getPos());
             return consumer.consumeBeam(trace.hitVec, dir, power, radius, fluxAngle);
         }
-        if (state.getBlock() instanceof ILaserOpaque) {
-            return ((ILaserOpaque)state.getBlock()).getLasingResult(pos, trace.hitVec, dir, power, radius, fluxAngle);
+        if (state.getBlock() instanceof ILaserBlock) {
+            Xbow.INSTANCE.getWsdManager().get(XbowWSDs.LASER_CONSUMER_TRACKER, pos.getWorld()).markLased(pos.getPos());
+            return ((ILaserBlock)state.getBlock()).getLasingResult(pos, trace.hitVec, dir, power, radius, fluxAngle);
         }
         return state.isOpaqueCube() ? LasingResult.OBSTRUCT : LasingResult.PASS;
+    }
+
+    @SubscribeEvent
+    public void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            Xbow.INSTANCE.getWsdManager().get(XbowWSDs.LASER_CONSUMER_TRACKER, event.world).update();
+        }
     }
 
     @Nullable

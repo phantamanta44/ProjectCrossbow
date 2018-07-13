@@ -1,0 +1,24 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "forge:multi-layer",
+    "custom": {
+      "base": "pcrossbow:sensor#frame",
+      "Solid": "pcrossbow:sensor#frame",
+      "Translucent": "pcrossbow:sensor#glass"
+    },
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "normal": [{}],
+    "active=true": [{}],
+    "active=false": [{}],
+    "inventory": [{}],
+    "frame": [{
+      "model": "pcrossbow:sensor_frame"
+    }],
+    "glass": [{
+      "model": "pcrossbow:inductor_glass"
+    }]
+  }
+}

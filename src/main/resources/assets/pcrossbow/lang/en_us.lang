@@ -8,6 +8,7 @@ tile.pcrossbow:inductor0.name=Beam Inductor
 tile.pcrossbow:optics0.name=Mirror
 tile.pcrossbow:optics1.name=Beam Splitter
 tile.pcrossbow:optics2.name=Unidirectional Mirror
+tile.pcrossbow:sensor.name=Beam Detector
 
 item.pcrossbow:wrench0.name=Optical Wrench
 item.pcrossbow:wrench1.name=Vector Gauge

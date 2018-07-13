@@ -58,7 +58,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
     protected void initModel() {
         super.initModel();
         LibNine.PROXY.getRegistrar().queueBlockStateMapperReg(this,
-                IBlockModelMapper.toModel(s -> ((Type)s.getProperties().get(XbowProps.OPTICS_TYPE)).getModelName()));
+                IBlockModelMapper.toModel(s -> s.getValue(XbowProps.OPTICS_TYPE).getModelName()));
         LibNine.PROXY.getRegistrar().queueTESRReg(TileMirror.class, new TESRFreeRotating<>(ResConst.MODEL_MIRROR, false));
         LibNine.PROXY.getRegistrar().queueTESRReg(TileSplitter.class, new TESRFreeRotating<>(ResConst.MODEL_SPLITTER, true));
         LibNine.PROXY.getRegistrar().queueTESRReg(TileOneWay.class, new TESRFreeRotating<>(ResConst.MODEL_ONE_WAY, true));
@@ -67,7 +67,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
     @SuppressWarnings("deprecation")
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
-        Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
+        Type type = state.getValue(XbowProps.OPTICS_TYPE);
         if (type.isRotatingOptics()) return EnumBlockRenderType.INVISIBLE;
         throw new ImpossibilityRealizedException();
     }
@@ -75,14 +75,14 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
     @SuppressWarnings("deprecation")
     @Override
     public boolean hasCustomBreakingProgress(IBlockState state) {
-        return ((Type)state.getProperties().get(XbowProps.OPTICS_TYPE)).isRotatingOptics();
+        return state.getValue(XbowProps.OPTICS_TYPE).isRotatingOptics();
     }
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
                                     EnumFacing face, float hitX, float hitY, float hitZ) {
         if (player.isSneaking()) return false;
-        Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
+        Type type = state.getValue(XbowProps.OPTICS_TYPE);
         if (type.isRotatingOptics()) {
             TileFreeRotatingOptics tile = getTileEntity(world, pos);
             if (tile != null) {
@@ -101,7 +101,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
     @SuppressWarnings("deprecation")
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        Type type = (Type)state.getProperties().get(XbowProps.OPTICS_TYPE);
+        Type type = state.getValue(XbowProps.OPTICS_TYPE);
         if (type.isRotatingOptics()) return BB_ROTATING_OPTICS;
         return FULL_BLOCK_AABB;
     }
@@ -114,7 +114,7 @@ public class BlockOptics extends L9BlockStated implements IDismantleable {
 
     @Override
     public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
-        return ((Type)state.getProperties().get(XbowProps.OPTICS_TYPE)).canRenderInPass(layer);
+        return state.getValue(XbowProps.OPTICS_TYPE).canRenderInPass(layer);
     }
 
     public enum Type implements IStringSerializable {

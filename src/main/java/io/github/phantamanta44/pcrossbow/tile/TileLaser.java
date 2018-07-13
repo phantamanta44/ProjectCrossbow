@@ -180,8 +180,8 @@ public abstract class TileLaser extends L9TileEntityTicking implements IRedstone
     }
 
     @Override
-    public void deserializeBytes(ByteUtils.Reader data) {
-        super.deserializeBytes(data);
+    public void deserBytes(ByteUtils.Reader data) {
+        super.deserBytes(data);
         if (clientFace != getDirection()) {
             world.markBlockRangeForRenderUpdate(pos, pos);
             clientFace = getDirection();

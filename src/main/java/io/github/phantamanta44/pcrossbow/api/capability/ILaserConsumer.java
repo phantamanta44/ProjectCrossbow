@@ -11,6 +11,10 @@ public interface ILaserConsumer {
         return pos;
     }
 
+    default void onLasingFinished() {
+        // NO-OP
+    }
+
     class Default implements ILaserConsumer {
 
         Default() {

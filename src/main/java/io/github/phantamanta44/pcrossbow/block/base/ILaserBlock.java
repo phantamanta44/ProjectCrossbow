@@ -4,11 +4,15 @@ import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.pcrossbow.LasingResult;
 import net.minecraft.util.math.Vec3d;
 
-public interface ILaserOpaque {
+public interface ILaserBlock {
 
     default LasingResult getLasingResult(WorldBlockPos blockPos, Vec3d pos, Vec3d dir,
                                          double power, double radius, double fluxAngle) {
         return LasingResult.OBSTRUCT;
+    }
+
+    default void lasingFinished(WorldBlockPos pos) {
+        // NO-OP
     }
 
 }

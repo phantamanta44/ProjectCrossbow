@@ -56,7 +56,7 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
         EnergyReservoir(ItemStack stack, ItemBlockPersistentDevice item) {
             super(item.getMaxEnergy(stack.getMetadata()));
             this.stack = stack;
-            deserializeNBT(stack.getTagCompound()
+            deserNBT(stack.getTagCompound()
                     .getCompoundTag(NBTConst.ITEM_BLOCK_STATE)
                     .getCompoundTag(NBTConst.ENERGY));
         }
@@ -64,7 +64,7 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
         @Override
         public void setQuantity(int qty) {
             super.setQuantity(qty);
-            serializeNBT(stack.getTagCompound()
+            serNBT(stack.getTagCompound()
                     .getCompoundTag(NBTConst.ITEM_BLOCK_STATE)
                     .getCompoundTag(NBTConst.ENERGY));
         }
