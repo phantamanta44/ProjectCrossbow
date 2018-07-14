@@ -10,6 +10,7 @@ public class XbowBlocks {
     public static BlockOptics optics;
     public static BlockSensor sensor;
     public static BlockRedstoneWindow redstoneWindow;
+    public static BlockMachine machine;
 
     public static void init() {
         LibNine.PROXY.getRegistrar().begin(Xbow.INSTANCE);
@@ -18,6 +19,7 @@ public class XbowBlocks {
         optics = new BlockOptics();
         sensor = new BlockSensor();
         redstoneWindow = new BlockRedstoneWindow();
+        machine = new BlockMachine();
         LibNine.PROXY.getRegistrar().end();
     }
 

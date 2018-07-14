@@ -11,6 +11,7 @@ tile.pcrossbow:optics2.name=Unidirectional Reflector
 tile.pcrossbow:sensor.name=Beam Detector
 tile.pcrossbow:redstone_window_direct.name=Selectively Permeable Glass
 tile.pcrossbow:redstone_window_inverted.name=Selectively Permeable Glass (Inverted)
+tile.pcrossbow:machine0.name=Photon Furnace
 
 item.pcrossbow:wrench0.name=Optical Wrench
 item.pcrossbow:wrench1.name=Vector Gauge
@@ -50,6 +51,9 @@ pcrossbow.info.mod_flux_angle=Flux Angle Factor: %s
 pcrossbow.info.redstone_ignored=No Redstone Control
 pcrossbow.info.redstone_direct=Direct Redstone Control
 pcrossbow.info.redstone_inverted=Inverted Redstone Control
+pcrossbow.info.slot_none=None
+pcrossbow.info.slot_input=Input
+pcrossbow.info.slot_output=Output
 
 pcrossbow.message.clone_copy=Copied Vector
 pcrossbow.message.clone_paste=Wrote Vector
@@ -60,6 +64,7 @@ pcrossbow.unit.power=FE/t
 pcrossbow.unit.distance=m
 pcrossbow.unit.angle=rad
 pcrossbow.unit.intensity=FE/t/m^2
+pcrossbow.unit.temperature=K
 
 pcrossbow.info.cardinal.up_north_west=Up Northwest
 pcrossbow.info.cardinal.up_north=Up North

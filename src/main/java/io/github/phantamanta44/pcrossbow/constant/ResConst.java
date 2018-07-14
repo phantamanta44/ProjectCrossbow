@@ -49,6 +49,7 @@ public class ResConst {
     public static final ResourceLocation GUI_VECTOR_WRENCH = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "vector_wrench.png");
     public static final ResourceLocation GUI_LASER = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "laser.png");
     public static final ResourceLocation GUI_INDUCTOR = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "inductor.png");
+    public static final ResourceLocation GUI_LASER_FURNACE = Xbow.INSTANCE.newResourceLocation(GUI_KEY + "laser_furnace.png");
 
     /*
      * Component textures
@@ -71,6 +72,10 @@ public class ResConst {
     public static final TextureRegion COMP_ENERGY_BG = COMP_ENERGY.getRegion(0, 0, 5, 68);
     public static final TextureRegion COMP_ENERGY_FG = COMP_ENERGY.getRegion(5, 0, 1, 64);
 
+    public static final TextureResource COMP_HEAT = Xbow.INSTANCE.newTextureResource(COMP_KEY + "heat.png", 6, 68);
+    public static final TextureRegion COMP_HEAT_BG = COMP_HEAT.getRegion(0, 0, 5, 68);
+    public static final TextureRegion COMP_HEAT_FG = COMP_HEAT.getRegion(5, 0, 1, 64);
+
     public static final TextureResource COMP_REDSTONE = Xbow.INSTANCE.newTextureResource(COMP_KEY + "redstone.png", 35, 7);
     public static final TextureRegion COMP_REDSTONE_CROSSHAIR = COMP_REDSTONE.getRegion(0, 0, 7, 7);
     public static final TextureRegion COMP_REDSTONE_BG = COMP_REDSTONE.getRegion(7, 0, 7, 7);
@@ -89,6 +94,13 @@ public class ResConst {
         }
         throw new ImpossibilityRealizedException();
     }
+
+    public static final TextureResource COMP_SLOTS = Xbow.INSTANCE.newTextureResource(COMP_KEY + "slots.png", 35, 7);
+    public static final TextureRegion COMP_SLOTS_BG = COMP_SLOTS.getRegion(0, 0, 7, 7);
+    public static final TextureRegion COMP_SLOTS_CROSSHAIR = COMP_SLOTS.getRegion(7, 0, 7, 7);
+    public static final TextureRegion COMP_SLOTS_NONE = COMP_SLOTS.getRegion(14, 0, 7, 7);
+    public static final TextureRegion COMP_SLOTS_INPUT = COMP_SLOTS.getRegion(21, 0, 7, 7);
+    public static final TextureRegion COMP_SLOTS_OUTPUT = COMP_SLOTS.getRegion(28, 0, 7, 7);
 
     /*
      * Colours

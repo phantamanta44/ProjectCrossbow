@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "pcrossbow:machine"
+  },
+  "variants": {
+    "type": {
+      "furnace": {
+        "textures": {
+          "front": "pcrossbow:blocks/machine/laser_furnace",
+          "front_active": "pcrossbow:blocks/machine/laser_furnace_active"
+        }
+      }
+    },
+    "rotation": {
+      "north": {},
+      "east": { "y": 90 },
+      "south": { "y": 180 },
+      "west": { "y": 270 }
+    },
+    "active": {
+      "true": {
+        "model": "pcrossbow:machine_active"
+      },
+      "false": {}
+    }
+  }
+}

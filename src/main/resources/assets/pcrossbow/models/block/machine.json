@@ -1,0 +1,44 @@
+{
+  "parent": "block/block",
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [ 0, 135, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.40, 0.40, 0.40 ]
+    }
+  },
+  "textures": {
+    "particle": "pcrossbow:blocks/machine/machine_side",
+    "side": "pcrossbow:blocks/machine/machine_side"
+  },
+  "elements": [{
+    "from": [ 0, 0, 0 ],
+    "to": [ 16, 16, 16 ],
+    "faces": {
+      "down": {
+        "texture": "#side",
+        "cullface": "down"
+      },
+      "up": {
+        "texture": "#side",
+        "cullface": "up"
+      },
+      "north": {
+        "texture": "#front",
+        "cullface": "north"
+      },
+      "south": {
+        "texture": "#side",
+        "cullface": "south"
+      },
+      "west": {
+        "texture": "#side",
+        "cullface": "west"
+      },
+      "east": {
+        "texture": "#side",
+        "cullface": "east"
+      }
+    }
+  }]
+}

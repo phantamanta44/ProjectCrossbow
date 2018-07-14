@@ -1,6 +1,7 @@
 package io.github.phantamanta44.pcrossbow.client.gui;
 
 import io.github.phantamanta44.libnine.util.helper.FormatUtils;
+import io.github.phantamanta44.pcrossbow.client.gui.base.GuiBase;
 import io.github.phantamanta44.pcrossbow.client.gui.component.GuiComponentEnergy;
 import io.github.phantamanta44.pcrossbow.client.gui.component.GuiComponentInfo;
 import io.github.phantamanta44.pcrossbow.client.gui.component.GuiComponentRedstone;

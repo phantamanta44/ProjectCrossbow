@@ -12,7 +12,7 @@ public class GuiComponentRedstone extends GuiComponent {
     private final IRedstoneControllable target;
 
     public GuiComponentRedstone(IRedstoneControllable target) {
-        super(9, 20, 21, 7);
+        super(10, 21, 21, 7);
         this.target = target;
     }
 

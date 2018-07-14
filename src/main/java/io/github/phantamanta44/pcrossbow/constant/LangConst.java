@@ -10,6 +10,7 @@ public class LangConst {
     public static final String BLOCK_OPTICS_NAME = "optics";
     public static final String BLOCK_SENSOR_NAME = "sensor";
     public static final String BLOCK_REDSTONE_WINDOW_NAME = "redstone_window";
+    public static final String BLOCK_MACHINE_NAME = "machine";
 
     public static final String ITEM_WRENCH_NAME = "wrench";
     public static final String ITEM_MOD_POWER_NAME = "beam_mod_power";
@@ -19,6 +20,7 @@ public class LangConst {
     public static final String GUI_VECTOR_WRENCH = "vector_wrench";
     public static final String GUI_LASER = "laser";
     public static final String GUI_INDUCTOR = "inductor";
+    public static final String GUI_LASER_FURNACE = "laser_furnace";
 
     private static final String INFO_KEY = XbowConst.MOD_ID + ".info.";
     public static final String INFO_FRACTION = INFO_KEY + "fraction";
@@ -46,6 +48,10 @@ public class LangConst {
     public static final String INFO_REDSTONE_DIRECT = INFO_KEY + "redstone_direct";
     public static final String INFO_REDSTONE_INVERTED = INFO_KEY + "redstone_inverted";
 
+    public static final String INFO_SLOT_NONE = INFO_KEY + "slot_none";
+    public static final String INFO_SLOT_INPUT = INFO_KEY + "slot_input";
+    public static final String INFO_SLOT_OUTPUT = INFO_KEY + "slot_output";
+
     private static final String INFO_CARDINAL_KEY = INFO_KEY + "cardinal.";
 
     public static String getCardinalName(Cardinal dir) {
@@ -63,6 +69,7 @@ public class LangConst {
     public static final String UNIT_DIST = UNIT_KEY + "distance";
     public static final String UNIT_ANGLE = UNIT_KEY + "angle";
     public static final String UNIT_INT = UNIT_KEY + "intensity";
+    public static final String UNIT_TEMP = UNIT_KEY + "temperature";
 
     public static String get(String key, Object... args) {
         return String.format(get(key), args);

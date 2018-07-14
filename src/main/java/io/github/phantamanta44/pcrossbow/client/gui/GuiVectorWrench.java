@@ -3,6 +3,7 @@ package io.github.phantamanta44.pcrossbow.client.gui;
 import io.github.phantamanta44.libnine.client.gui.component.impl.GuiComponentTextInput;
 import io.github.phantamanta44.libnine.util.helper.ItemUtils;
 import io.github.phantamanta44.libnine.util.math.LinAlUtils;
+import io.github.phantamanta44.pcrossbow.client.gui.base.GuiBase;
 import io.github.phantamanta44.pcrossbow.client.gui.component.GuiComponentCardinal;
 import io.github.phantamanta44.pcrossbow.client.gui.component.GuiComponentInfo;
 import io.github.phantamanta44.pcrossbow.constant.LangConst;

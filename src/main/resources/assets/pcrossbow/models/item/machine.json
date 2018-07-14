@@ -1,0 +1,15 @@
+{
+  "9s": "pi",
+  "archetype": {
+    "parent": "pcrossbow:block/machine"
+  },
+  "mutations": {
+    "type": {
+      "furnace": {
+        "textures": {
+          "front": "pcrossbow:blocks/machine/laser_furnace"
+        }
+      }
+    }
+  }
+}
