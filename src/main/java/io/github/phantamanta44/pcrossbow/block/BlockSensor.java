@@ -2,7 +2,7 @@ package io.github.phantamanta44.pcrossbow.block;
 
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
-import io.github.phantamanta44.libnine.util.Accrue;
+import io.github.phantamanta44.libnine.util.collection.Accrue;
 import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.pcrossbow.LasingResult;
 import io.github.phantamanta44.pcrossbow.block.base.IDismantleable;

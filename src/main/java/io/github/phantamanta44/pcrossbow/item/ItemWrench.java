@@ -136,11 +136,11 @@ public class ItemWrench extends L9ItemSubs implements ParameterizedItemModel.IPa
                 return false;
             }
 
-            @Nullable
             @Override
             public ICapabilityProvider getCapabilities(ItemStack stack) {
                 return new CapabilityBrokerLazy(c -> {
                     if (c == XbowCaps.VECTOR_DIR) return new VectorAspect(stack);
+                    //noinspection ReturnOfNull
                     return null;
                 });
             }

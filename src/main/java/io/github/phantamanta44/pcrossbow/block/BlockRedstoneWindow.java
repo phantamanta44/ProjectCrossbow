@@ -4,7 +4,7 @@ import io.github.phantamanta44.libnine.LibNine;
 import io.github.phantamanta44.libnine.block.L9BlockStated;
 import io.github.phantamanta44.libnine.block.state.IBlockModelMapper;
 import io.github.phantamanta44.libnine.item.L9ItemBlock;
-import io.github.phantamanta44.libnine.util.Accrue;
+import io.github.phantamanta44.libnine.util.collection.Accrue;
 import io.github.phantamanta44.libnine.util.function.IBoolUnaryOperator;
 import io.github.phantamanta44.libnine.util.math.LinAlUtils;
 import io.github.phantamanta44.libnine.util.world.WorldBlockPos;

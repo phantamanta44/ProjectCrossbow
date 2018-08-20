@@ -32,6 +32,7 @@ public abstract class TileSimpleProcessor<T, I extends IRcpIn<T>, U, O extends I
     private boolean inputDirty;
     @Nullable
     private R recipe;
+    @Nullable
     private O output;
     private EnumFacing clientFace;
 
@@ -80,7 +81,7 @@ public abstract class TileSimpleProcessor<T, I extends IRcpIn<T>, U, O extends I
             setDirty();
         }
         boolean wasWorking = isWorking;
-        if (canWork()) {
+        if (recipe != null && output != null && canWork()) {
             isWorking = updateWork();
             if (!world.isRemote) {
                 int work = currentWork.getInt(), workNeeded = getWorkNeeded(recipe);
@@ -109,7 +110,8 @@ public abstract class TileSimpleProcessor<T, I extends IRcpIn<T>, U, O extends I
     }
 
     protected boolean canWork() {
-        return recipe != null && output.isAcceptable(getOutputEnv()) && redstone.get().canWork(getWorldPos());
+        //noinspection ConstantConditions
+        return output.isAcceptable(getOutputEnv()) && redstone.get().canWork(getWorldPos());
     }
 
     protected abstract boolean inputExists();

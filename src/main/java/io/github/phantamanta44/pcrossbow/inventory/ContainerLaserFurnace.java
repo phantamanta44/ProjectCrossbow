@@ -2,11 +2,11 @@ package io.github.phantamanta44.pcrossbow.inventory;
 
 import io.github.phantamanta44.libnine.util.data.ByteUtils;
 import io.github.phantamanta44.libnine.util.world.BlockSide;
+import io.github.phantamanta44.libnine.util.world.IAllocableSides;
 import io.github.phantamanta44.pcrossbow.api.tile.IHeatCarrier;
 import io.github.phantamanta44.pcrossbow.inventory.base.ContainerMachine;
 import io.github.phantamanta44.pcrossbow.inventory.slot.OutputSlot;
 import io.github.phantamanta44.pcrossbow.tile.TileLaserFurnace;
-import io.github.phantamanta44.pcrossbow.util.IAllocableSides;
 import io.github.phantamanta44.pcrossbow.util.SlotType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;

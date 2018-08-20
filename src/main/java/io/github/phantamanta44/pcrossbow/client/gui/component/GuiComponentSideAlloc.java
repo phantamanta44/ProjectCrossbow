@@ -4,8 +4,8 @@ import io.github.phantamanta44.libnine.client.gui.component.GuiComponent;
 import io.github.phantamanta44.libnine.util.math.Vec2i;
 import io.github.phantamanta44.libnine.util.render.GuiUtils;
 import io.github.phantamanta44.libnine.util.world.BlockSide;
+import io.github.phantamanta44.libnine.util.world.IAllocableSides;
 import io.github.phantamanta44.pcrossbow.constant.ResConst;
-import io.github.phantamanta44.pcrossbow.util.IAllocableSides;
 import io.github.phantamanta44.pcrossbow.util.SlotType;
 
 public class GuiComponentSideAlloc<T extends Enum<T> & SlotType.IType<T>> extends GuiComponent {

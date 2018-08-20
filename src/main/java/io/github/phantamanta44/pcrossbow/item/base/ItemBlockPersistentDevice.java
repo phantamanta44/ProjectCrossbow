@@ -32,6 +32,7 @@ public abstract class ItemBlockPersistentDevice extends ItemBlockPersistentState
             if (c == CapabilityEnergy.ENERGY) {
                 if (stack.hasTagCompound()) return new L9AspectEnergy(new EnergyReservoir(stack, this));
             }
+            //noinspection ReturnOfNull
             return null;
         });
     }

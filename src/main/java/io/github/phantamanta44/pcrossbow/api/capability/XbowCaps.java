@@ -1,10 +1,12 @@
 package io.github.phantamanta44.pcrossbow.api.capability;
 
+import io.github.phantamanta44.libnine.InitMe;
 import io.github.phantamanta44.libnine.capability.StatelessCapabilitySerializer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 
+@SuppressWarnings("NullableProblems")
 public class XbowCaps {
 
     @CapabilityInject(ILaserConsumer.class)
@@ -18,6 +20,7 @@ public class XbowCaps {
     @CapabilityInject(ILaserFluxAngleModifier.class)
     public static Capability<ILaserFluxAngleModifier> LASER_MOD_FLUX_ANGLE;
 
+    @InitMe
     public static void init() {
         CapabilityManager.INSTANCE.register(
                 ILaserConsumer.class, new StatelessCapabilitySerializer<>(), ILaserConsumer.Default::new);

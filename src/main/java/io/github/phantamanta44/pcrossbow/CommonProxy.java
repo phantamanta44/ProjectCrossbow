@@ -5,10 +5,7 @@ import io.github.phantamanta44.libnine.util.world.WorldBlockPos;
 import io.github.phantamanta44.libnine.util.world.WorldUtils;
 import io.github.phantamanta44.pcrossbow.api.capability.ILaserConsumer;
 import io.github.phantamanta44.pcrossbow.api.capability.XbowCaps;
-import io.github.phantamanta44.pcrossbow.block.XbowBlocks;
 import io.github.phantamanta44.pcrossbow.block.base.ILaserBlock;
-import io.github.phantamanta44.pcrossbow.client.gui.XbowGuis;
-import io.github.phantamanta44.pcrossbow.item.XbowItems;
 import io.github.phantamanta44.pcrossbow.util.PhysicsUtils;
 import io.github.phantamanta44.pcrossbow.util.XbowDamage;
 import io.github.phantamanta44.pcrossbow.wsd.XbowWSDs;
@@ -44,12 +41,7 @@ public class CommonProxy {
 
     public void onPreInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
-        XbowCaps.init();
-        XbowWSDs.init();
         // TODO Load config
-        XbowBlocks.init();
-        XbowItems.init();
-        XbowGuis.init();
     }
 
     public void onInit(FMLInitializationEvent event) {
@@ -141,6 +133,7 @@ public class CommonProxy {
         }
     }
 
+    @Nullable
     protected ILaserConsumer getLaserConsumer(WorldBlockPos pos, EnumFacing dir) {
         TileEntity tile = pos.getTileEntity();
         return (tile != null && tile.hasCapability(XbowCaps.LASER_CONSUMER, dir))
